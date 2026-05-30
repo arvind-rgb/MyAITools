@@ -1,0 +1,11 @@
+node_modules/
+usecases.db
+.env
+*.log
+.DS_Store
+instance/
+porter_session/
+__pycache__/
+*.pyc
+gmail_token.json
+credentials.json

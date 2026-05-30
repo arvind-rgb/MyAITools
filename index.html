@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BHOOKLE // AI USE CASE REGISTRY</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg:       #0d1117;
+    --bg2:      #161b22;
+    --bg3:      #21262d;
+    --border:   #30363d;
+    --amber:    #e6a817;
+    --amber-dim:#7a5a0d;
+    --green:    #3fb950;
+    --red:      #f85149;
+    --blue:     #58a6ff;
+    --purple:   #d2a8ff;
+    --text:     #c9d1d9;
+    --text-dim: #8b949e;
+    --text-inv: #0d1117;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--amber-dim);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 0 24px rgba(230,168,23,0.08);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 3px;
+    text-shadow: 0 0 12px rgba(230,168,23,0.5);
+  }
+
+  .header-title .slash { color: var(--text-dim); margin: 0 6px; }
+
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    height: 16px;
+    background: var(--amber);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blink 1.1s step-end infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .header-sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stat-pill {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-pill .num {
+    color: var(--amber);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* ─── TOOLBAR ─── */
+  .toolbar {
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+    max-width: 380px;
+  }
+
+  .search-wrap::before {
+    content: '⌕';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  textarea,
+  select {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus,
+  input[type="date"]:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 2px rgba(230,168,23,0.12);
+  }
+
+  .search-input {
+    width: 100%;
+    padding-left: 30px;
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b949e' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--amber);
+    color: var(--text-inv);
+    border-color: var(--amber);
+  }
+
+  .btn-primary:hover {
+    background: #f5be2d;
+    box-shadow: 0 0 12px rgba(230,168,23,0.4);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border-color: var(--border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text);
+    border-color: var(--text-dim);
+    background: var(--bg3);
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border-color: transparent;
+    padding: 4px 8px;
+  }
+
+  .btn-danger:hover {
+    background: rgba(248,81,73,0.1);
+    border-color: var(--red);
+  }
+
+  .btn-edit {
+    background: transparent;
+    color: var(--text-dim);
+    border-color: transparent;
+    padding: 4px 8px;
+  }
+
+  .btn-edit:hover {
+    background: rgba(88,166,255,0.1);
+    color: var(--blue);
+    border-color: var(--blue);
+  }
+
+  .filter-select {
+    min-width: 140px;
+  }
+
+  /* ─── TABLE ─── */
+  .table-wrap {
+    overflow-x: auto;
+    padding: 0 32px 32px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    min-width: 900px;
+  }
+
+  thead tr {
+    background: var(--bg3);
+    border-bottom: 2px solid var(--amber-dim);
+  }
+
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--amber);
+    text-transform: uppercase;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  th.sortable { cursor: pointer; }
+  th.sortable:hover { color: #f5be2d; }
+
+  th .sort-icon { margin-left: 4px; opacity: 0.4; }
+  th.sorted .sort-icon { opacity: 1; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  tbody tr:hover { background: rgba(230,168,23,0.03); }
+  tbody tr.editing { background: rgba(230,168,23,0.06) !important; }
+
+  td {
+    padding: 10px 14px;
+    vertical-align: top;
+    color: var(--text);
+    font-size: 12px;
+  }
+
+  .td-sno {
+    color: var(--text-dim);
+    font-size: 11px;
+    min-width: 46px;
+    padding-top: 12px;
+  }
+
+  .td-bu {
+    min-width: 160px;
+  }
+
+  .td-name {
+    min-width: 200px;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .td-desc {
+    min-width: 340px;
+    max-width: 480px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    font-size: 11.5px;
+  }
+
+  .td-priority {
+    min-width: 120px;
+    white-space: nowrap;
+  }
+
+  .td-owner {
+    min-width: 120px;
+  }
+
+  .td-actions {
+    min-width: 90px;
+    white-space: nowrap;
+  }
+
+  /* Priority badges */
+  .priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+    letter-spacing: 0.5px;
+  }
+
+  .priority-critical { color: #f85149; border-color: rgba(248,81,73,0.3); background: rgba(248,81,73,0.08); }
+  .priority-high     { color: #fb8500; border-color: rgba(251,133,0,0.3);  background: rgba(251,133,0,0.08); }
+  .priority-medium   { color: #e6a817; border-color: rgba(230,168,23,0.3); background: rgba(230,168,23,0.08); }
+  .priority-low      { color: #3fb950; border-color: rgba(63,185,80,0.3);  background: rgba(63,185,80,0.08); }
+
+  /* Status badges */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .status-planned    { color: #58a6ff; border-color: rgba(88,166,255,0.3); background: rgba(88,166,255,0.08); }
+  .status-inprogress { color: #e6a817; border-color: rgba(230,168,23,0.3); background: rgba(230,168,23,0.08); }
+  .status-done       { color: #3fb950; border-color: rgba(63,185,80,0.3);  background: rgba(63,185,80,0.08); }
+  .status-parked     { color: #8b949e; border-color: rgba(139,148,158,0.3);background: rgba(139,148,158,0.08); }
+
+  /* Output URL */
+  .output-link {
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 11px;
+    word-break: break-all;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .output-link:hover { text-decoration: underline; }
+  .td-output { min-width: 160px; max-width: 200px; }
+  .td-status { min-width: 130px; white-space: nowrap; }
+
+  /* Business unit chip */
+  .bu-chip {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10.5px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--purple);
+    letter-spacing: 0.3px;
+  }
+
+  /* Inline edit inputs */
+  td input[type="text"],
+  td textarea,
+  td select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  td textarea { resize: vertical; min-height: 60px; }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 64px 32px;
+    color: var(--text-dim);
+  }
+
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 14px; color: var(--text); margin-bottom: 6px; }
+  .empty-state p { font-size: 12px; }
+
+  /* ─── MODAL ─── */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+  }
+
+  .modal-backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--amber-dim);
+    border-radius: 8px;
+    width: 600px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 48px rgba(230,168,23,0.15), 0 24px 48px rgba(0,0,0,0.6);
+    animation: slideIn 0.2s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-16px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header h2 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .modal-close:hover { color: var(--text); background: var(--bg3); }
+
+  .modal-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+  }
+
+  .form-group textarea {
+    min-height: 90px;
+    line-height: 1.6;
+    resize: vertical;
+  }
+
+  .modal-footer {
+    padding: 16px 24px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-dim);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    border-top: 1px solid var(--border);
+  }
+
+  footer span { color: var(--amber); }
+
+  /* ─── TOAST ─── */
+  #toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--bg3);
+    border: 1px solid var(--green);
+    color: var(--green);
+    font-size: 12px;
+    padding: 10px 18px;
+    border-radius: 4px;
+    z-index: 9998;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.2s;
+    pointer-events: none;
+    box-shadow: 0 0 16px rgba(63,185,80,0.2);
+  }
+
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--amber-dim); }
+
+  .no-results { text-align: center; padding: 40px; color: var(--text-dim); }
+
+  .editable-cell {
+    cursor: pointer;
+    position: relative;
+    transition: background 0.1s;
+  }
+  .editable-cell:hover {
+    background: rgba(230,168,23,0.07);
+    outline: 1px dashed var(--amber-dim);
+    outline-offset: -2px;
+  }
+  .editable-cell:hover::after {
+    content: '✎';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 9px;
+    color: var(--amber-dim);
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-brand">
+    <!-- RETRO 80s ARCADE LOGO -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="52" height="52" style="flex-shrink:0">
+      <defs>
+        <linearGradient id="retroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FF00FF"/>
+          <stop offset="50%" stop-color="#e6a817"/>
+          <stop offset="100%" stop-color="#00FFFF"/>
+        </linearGradient>
+        <filter id="retroGlow">
+          <feGaussianBlur stdDeviation="0.8" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Retro arcade cabinet frame -->
+      <rect width="48" height="48" fill="#1a0033"/>
+      <rect x="2" y="2" width="44" height="44" fill="none" stroke="#FF00FF" stroke-width="2.5"/>
+      <rect x="4" y="4" width="40" height="40" fill="none" stroke="#00FFFF" stroke-width="1" opacity="0.6"/>
+
+      <!-- Pixel-art style "B" made of retro blocks -->
+      <!-- Left vertical bar -->
+      <rect x="6" y="6" width="6" height="36" fill="#FF00FF" filter="url(#retroGlow)"/>
+
+      <!-- Top bump -->
+      <rect x="12" y="6" width="12" height="7" fill="#FF00FF" filter="url(#retroGlow)"/>
+      <rect x="24" y="9" width="4" height="4" fill="#FF00FF" filter="url(#retroGlow)"/>
+
+      <!-- Middle notch -->
+      <rect x="12" y="15" width="10" height="4" fill="#1a0033"/>
+
+      <!-- Bottom bump (larger) -->
+      <rect x="12" y="19" width="14" height="9" fill="#FF00FF" filter="url(#retroGlow)"/>
+      <rect x="26" y="21" width="4" height="5" fill="#FF00FF" filter="url(#retroGlow)"/>
+
+      <!-- Retro eyes/glints -->
+      <rect x="9" y="11" width="2" height="2" fill="#00FFFF" filter="url(#retroGlow)"/>
+      <rect x="9" y="26" width="2" height="2" fill="#00FFFF" filter="url(#retroGlow)"/>
+
+      <!-- Arcade corner accents -->
+      <rect x="32" y="8" width="3" height="3" fill="#00FFFF" opacity="0.8"/>
+      <rect x="32" y="37" width="3" height="3" fill="#FF00FF" opacity="0.8"/>
+
+      <!-- Scanlines effect overlay -->
+      <g stroke="#FF00FF" stroke-width="0.5" opacity="0.3">
+        <line x1="6" y1="10" x2="30" y2="10"/>
+        <line x1="6" y1="15" x2="28" y2="15"/>
+        <line x1="6" y1="20" x2="30" y2="20"/>
+        <line x1="6" y1="25" x2="28" y2="25"/>
+        <line x1="6" y1="30" x2="30" y2="30"/>
+        <line x1="6" y1="35" x2="28" y2="35"/>
+      </g>
+    </svg>
+    <div class="header-left">
+      <div class="header-title">
+        BHOOKLE<span class="slash">//</span>AI USE CASE REGISTRY<span class="cursor"></span>
+      </div>
+      <div class="header-sub">INTERNAL STRATEGY DOCUMENT · AI EMPLOYMENT MAP</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="stat-pill">
+      TOTAL <span class="num" id="totalCount">0</span>
+    </div>
+    <div class="stat-pill">
+      CRITICAL <span class="num" id="criticalCount" style="color:var(--red)">0</span>
+    </div>
+    <div class="stat-pill">
+      DONE <span class="num" id="doneCount" style="color:var(--green)">0</span>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ ADD USE CASE</button>
+    <button class="btn btn-ghost" onclick="exportCSV()">↓ EXPORT CSV</button>
+  </div>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <input class="search-input" type="text" id="searchInput" placeholder="Search use cases..." oninput="renderTable()">
+  </div>
+  <select class="filter-select" id="filterBU" onchange="renderTable()">
+    <option value="">ALL BUSINESS UNITS</option>
+    <option>Marketing</option>
+    <option>Operations</option>
+    <option>Product</option>
+    <option>Business Development</option>
+    <option>Customer Success</option>
+    <option>Finance</option>
+    <option>Tech / Engineering</option>
+    <option>Revenue</option>
+    <option>Chef Onboarding</option>
+    <option>Logistics</option>
+    <option>Analytics</option>
+    <option>Investment</option>
+    <option>Subscription</option>
+    <option>Support</option>
+    <option>Personal</option>
+  </select>
+  <select class="filter-select" id="filterPriority" onchange="renderTable()">
+    <option value="">ALL PRIORITIES</option>
+    <option value="Critical">🔴 Critical</option>
+    <option value="High">🟠 High</option>
+    <option value="Medium">🟡 Medium</option>
+    <option value="Low">🟢 Low</option>
+  </select>
+  <select class="filter-select" id="filterStatus" onchange="renderTable()">
+    <option value="">ALL STATUSES</option>
+    <option value="Planned">📋 Planned</option>
+    <option value="In Progress">⚡ In Progress</option>
+    <option value="Done">✅ Done</option>
+    <option value="Parked">⏸ Parked</option>
+  </select>
+  <button class="btn btn-ghost" id="personalBtn" onclick="togglePersonal()" style="display:flex;align-items:center;gap:6px;letter-spacing:1.5px">
+    <span id="personalLockIcon">🔒</span> PERSONAL
+  </button>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th class="sortable" onclick="sortBy('businessUnit')">BUSINESS UNIT <span class="sort-icon">↕</span></th>
+        <th class="sortable" onclick="sortBy('name')">USE CASE NAME <span class="sort-icon">↕</span></th>
+        <th>USE CASE DESCRIPTION</th>
+        <th class="sortable" onclick="sortBy('priority')">PRIORITY <span class="sort-icon">↕</span></th>
+        <th>OWNER</th>
+        <th class="sortable" onclick="sortBy('status')">STATUS <span class="sort-icon">↕</span></th>
+        <th>OUTPUT URL</th>
+        <th>ACTIONS</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="icon">⬛</div>
+    <h3>NO RECORDS FOUND</h3>
+    <p>Try adjusting your filters or add a new use case.</p>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="closeOnBackdrop(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">ADD USE CASE</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Business Unit *</label>
+          <select id="fBU">
+            <option value="">Select unit...</option>
+            <option>Marketing</option>
+            <option>Operations</option>
+            <option>Product</option>
+            <option>Business Development</option>
+            <option>Customer Success</option>
+            <option>Finance</option>
+            <option>Tech / Engineering</option>
+            <option>Revenue</option>
+            <option>Chef Onboarding</option>
+            <option>Logistics</option>
+            <option>Analytics</option>
+            <option>Investment</option>
+            <option>Subscription</option>
+            <option>Support</option>
+            <option>Personal</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority *</label>
+          <select id="fPriority">
+            <option value="">Select priority...</option>
+            <option value="Critical">🔴 Critical</option>
+            <option value="High">🟠 High</option>
+            <option value="Medium">🟡 Medium</option>
+            <option value="Low">🟢 Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Use Case Name *</label>
+        <input type="text" id="fName" placeholder="e.g. AI Email Personalization">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Use Case Description *</label>
+        <textarea id="fDesc" placeholder="Describe the AI use case, what it does, and its expected impact..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Owner</label>
+          <input type="text" id="fOwner" placeholder="e.g. Arvind / Product Team">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select id="fStatus">
+            <option value="Planned">📋 Planned</option>
+            <option value="In Progress">⚡ In Progress</option>
+            <option value="Done">✅ Done</option>
+            <option value="Parked">⏸ Parked</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Output URL</label>
+        <input type="text" id="fOutput" placeholder="e.g. https://app.bhookle.com/recommendations">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveEntry()" id="saveBtn">SAVE USE CASE</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="modal-backdrop" id="pwModalBackdrop" onclick="closePwOnBackdrop(event)">
+  <div class="modal" style="width:380px">
+    <div class="modal-header">
+      <h2>🔒 UNLOCK PERSONAL</h2>
+      <button class="modal-close" onclick="closePwModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group full">
+        <label class="form-label">Password</label>
+        <input type="password" id="pwInput" placeholder="Enter password..." onkeydown="if(event.key==='Enter')checkPassword()">
+      </div>
+      <div id="pwError" style="color:var(--red);font-size:11px;margin-top:-8px;display:none">⚠ Incorrect password. Try again.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closePwModal()">CANCEL</button>
+      <button class="btn btn-primary" onclick="checkPassword()">UNLOCK</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- FOOTER -->
+<footer>BHOOKLE · AI USE CASE REGISTRY · <span>INTERNAL</span> · v1.0</footer>
+
+<script>
+const PRIORITY_ORDER = { Critical: 1, High: 2, Medium: 3, Low: 4 };
+let personalUnlocked = false;
+const _pk = atob('TVRQQUA5MjQ='); // MTPA@924
+
+function togglePersonal() {
+  if (personalUnlocked) {
+    personalUnlocked = false;
+    updatePersonalBtn();
+    renderTable();
+    toast('🔒 Personal locked.', 'var(--text-dim)');
+  } else {
+    openPwModal();
+  }
+}
+function openPwModal() {
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').style.display = 'none';
+  document.getElementById('pwModalBackdrop').classList.add('open');
+  setTimeout(() => document.getElementById('pwInput').focus(), 80);
+}
+function closePwModal() {
+  document.getElementById('pwModalBackdrop').classList.remove('open');
+}
+function closePwOnBackdrop(e) {
+  if (e.target === document.getElementById('pwModalBackdrop')) closePwModal();
+}
+function checkPassword() {
+  if (document.getElementById('pwInput').value === _pk) {
+    personalUnlocked = true;
+    closePwModal();
+    updatePersonalBtn();
+    renderTable();
+    toast('🔓 Personal unlocked.', 'var(--green)');
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+function updatePersonalBtn() {
+  const btn = document.getElementById('personalBtn');
+  document.getElementById('personalLockIcon').textContent = personalUnlocked ? '🔓' : '🔒';
+  btn.style.color = personalUnlocked ? 'var(--green)' : '';
+  btn.style.borderColor = personalUnlocked ? 'var(--green)' : '';
+}
+
+const DEFAULTS = [
+  { id: 1,  businessUnit: 'Marketing',            name: 'AI Email Personalization',       description: 'Generate AI-customized investor outreach emails per lead using Claude, preserving the founder\'s exact voice, tone, and energy. References investor\'s portfolio companies for contextual relevance.',   priority: 'Critical', owner: 'Arvind',       status: 'Done',        output: 'https://bhookle-ai-usecases.surge.sh' },
+  { id: 2,  businessUnit: 'Business Development', name: 'Investor Lead Enrichment',       description: 'Auto-enrich investor profiles by scraping the web and using AI to analyze recent investments, portfolio thesis, and sector focus. Populates lead fields without manual research.',                       priority: 'High',     owner: 'Arvind',       status: 'In Progress', output: '' },
+  { id: 3,  businessUnit: 'Marketing',            name: 'Daily Push Notifications',       description: 'Generate fresh, fun, and playful notification copy for Lunch (11:45 AM) and Dinner (6:45 PM IST) alerts every day using Claude. Avoids repetition and keeps messaging brand-consistent.',              priority: 'Critical', owner: 'Arvind',       status: 'Done',        output: '' },
+  { id: 4,  businessUnit: 'Business Development', name: 'LinkedIn Message Drafting',      description: 'Draft personalized LinkedIn outreach messages for investors using context from their portfolio — investment history, sector focus, and recent activity — without sounding templated.',                    priority: 'Medium',   owner: 'Arvind',       status: 'Planned',     output: '' },
+  { id: 5,  businessUnit: 'Product',              name: 'Menu Recommendation Engine',     description: 'AI-powered food suggestions based on user preferences, past order history, time of day, and trending dishes. Increases average order value and repeat purchases.',                                      priority: 'High',     owner: 'Product Team', status: 'Planned',     output: '' },
+  { id: 6,  businessUnit: 'Operations',           name: 'Demand Forecasting',             description: 'Predict daily order volumes per dish and per kitchen zone to optimize prep quantities, reduce food wastage, and improve kitchen throughput during peak hours.',                                          priority: 'High',     owner: 'Operations',   status: 'Planned',     output: '' },
+  { id: 7,  businessUnit: 'Revenue',              name: 'Dynamic Pricing Engine',         description: 'AI-driven pricing adjustments based on real-time demand signals, competitor pricing, time-of-day patterns, and inventory levels to maximize revenue per order.',                                        priority: 'Medium',   owner: 'Revenue Team', status: 'Parked',      output: '' },
+  { id: 8,  businessUnit: 'Customer Success',     name: 'Sentiment Analysis & Triage',    description: 'Analyze incoming customer reviews, chat transcripts, and feedback to automatically surface product/experience issues, classify complaints, and route to the right team.',                               priority: 'Low',      owner: 'CS Team',      status: 'Planned',     output: '' },
+  { id: 9,  businessUnit: 'Operations',           name: 'Kitchen Routing Optimization',   description: 'AI assigns incoming orders to the optimal kitchen station based on workload, dish complexity, and prep time. Minimizes order assembly time and improves on-time delivery rate.',                        priority: 'Medium',   owner: 'Operations',   status: 'Planned',     output: '' },
+  { id: 10, businessUnit: 'Marketing',            name: 'Campaign Performance Analysis',  description: 'AI analysis of which outreach email templates, subject lines, and personalization strategies have the highest open and response rates. Surfaces winning patterns for future campaigns.',                priority: 'Low',      owner: 'Marketing',    status: 'Planned',     output: '' },
+];
+
+const STORAGE_KEY = 'bhookle_usecases';
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+
+function saveData() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+let data = loadData();
+let nextId = data.length ? Math.max(...data.map(d => d.id)) + 1 : 1;
+let editingId = null;
+let sortKey = null;
+let sortDir = 1;
+
+function priorityClass(p) {
+  return { Critical: 'priority-critical', High: 'priority-high', Medium: 'priority-medium', Low: 'priority-low' }[p] || '';
+}
+function priorityLabel(p) {
+  return { Critical: '🔴 CRITICAL', High: '🟠 HIGH', Medium: '🟡 MEDIUM', Low: '🟢 LOW' }[p] || p;
+}
+function statusClass(s) {
+  return { Planned: 'status-planned', 'In Progress': 'status-inprogress', Done: 'status-done', Parked: 'status-parked' }[s] || 'status-planned';
+}
+function statusLabel(s) {
+  return { Planned: '📋 PLANNED', 'In Progress': '⚡ IN PROGRESS', Done: '✅ DONE', Parked: '⏸ PARKED' }[s] || (s || '📋 PLANNED');
+}
+
+function renderTable() {
+  const search   = document.getElementById('searchInput').value.toLowerCase();
+  const filterBU = document.getElementById('filterBU').value;
+  const filterPri = document.getElementById('filterPriority').value;
+
+  const filterStatus = document.getElementById('filterStatus').value;
+
+  let rows = data.filter(r => {
+    const haystack = [r.name, r.description, r.businessUnit, r.owner, r.output || ''].join(' ').toLowerCase();
+    const matchSearch  = !search || haystack.includes(search);
+    const matchBU      = !filterBU || r.businessUnit === filterBU;
+    const matchPri     = !filterPri || r.priority === filterPri;
+    const matchStatus  = !filterStatus || r.status === filterStatus;
+    const matchPersonal = r.businessUnit !== 'Personal' || personalUnlocked;
+    return matchSearch && matchBU && matchPri && matchStatus && matchPersonal;
+  });
+
+  if (sortKey) {
+    rows.sort((a, b) => {
+      let av = a[sortKey], bv = b[sortKey];
+      if (sortKey === 'priority') { av = PRIORITY_ORDER[av]; bv = PRIORITY_ORDER[bv]; }
+      return (av < bv ? -1 : av > bv ? 1 : 0) * sortDir;
+    });
+  }
+
+  document.getElementById('totalCount').textContent    = data.length;
+  document.getElementById('criticalCount').textContent = data.filter(r => r.priority === 'Critical').length;
+  document.getElementById('doneCount').textContent     = data.filter(r => r.status === 'Done').length;
+
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr id="row-${r.id}">
+      <td class="td-sno">${String(i + 1).padStart(2, '0')}</td>
+      <td class="td-bu editable-cell" onclick="activateCell(this,${r.id},'businessUnit','select-bu')" title="Click to edit"><span class="bu-chip">${escHtml(r.businessUnit)}</span></td>
+      <td class="td-name editable-cell" onclick="activateCell(this,${r.id},'name','text')" title="Click to edit">${escHtml(r.name)}</td>
+      <td class="td-desc editable-cell" onclick="activateCell(this,${r.id},'description','textarea')" title="Click to edit">${escHtml(r.description)}</td>
+      <td class="td-priority editable-cell" onclick="activateCell(this,${r.id},'priority','select-priority')" title="Click to edit"><span class="priority-badge ${priorityClass(r.priority)}">${priorityLabel(r.priority)}</span></td>
+      <td class="td-owner editable-cell" onclick="activateCell(this,${r.id},'owner','text')" title="Click to edit">${escHtml(r.owner)}</td>
+      <td class="td-status editable-cell" onclick="activateCell(this,${r.id},'status','select-status')" title="Click to edit"><span class="status-badge ${statusClass(r.status)}">${statusLabel(r.status)}</span></td>
+      <td class="td-output editable-cell" onclick="activateCell(this,${r.id},'output','url')" title="Click to edit">${r.output ? `<a class="output-link" href="${escHtml(r.output)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ ${escHtml(r.output.replace(/^https?:\/\//, ''))}</a>` : '<span style="color:var(--text-dim);font-size:11px">click to add url</span>'}</td>
+      <td class="td-actions">
+        <button class="btn btn-danger" onclick="deleteEntry(${r.id})" title="Delete">✕</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+const BU_OPTIONS = ['Marketing','Operations','Product','Business Development','Customer Success','Finance','Tech / Engineering','Revenue','Chef Onboarding','Logistics','Analytics','Investment','Subscription','Support'];
+const PRI_OPTIONS = [['Critical','🔴 Critical'],['High','🟠 High'],['Medium','🟡 Medium'],['Low','🟢 Low']];
+const STA_OPTIONS = [['Planned','📋 Planned'],['In Progress','⚡ In Progress'],['Done','✅ Done'],['Parked','⏸ Parked']];
+
+function activateCell(td, id, field, type) {
+  if (td.querySelector('input,select,textarea')) return;
+  const r = data.find(d => d.id === id);
+  const current = r[field] || '';
+  let el;
+
+  if (type === 'textarea') {
+    el = document.createElement('textarea');
+    el.value = current;
+    el.rows = 3;
+    el.style.cssText = 'width:100%;font-family:inherit;font-size:12px;background:var(--bg3);color:var(--text);border:1px solid var(--amber);border-radius:3px;padding:6px;resize:vertical;outline:none;';
+  } else if (type === 'text' || type === 'url') {
+    el = document.createElement('input');
+    el.type = 'text';
+    el.value = current;
+    el.style.cssText = 'width:100%;font-family:inherit;font-size:12px;background:var(--bg3);color:var(--text);border:1px solid var(--amber);border-radius:3px;padding:6px;outline:none;';
+  } else if (type === 'select-bu') {
+    el = document.createElement('select');
+    el.style.cssText = 'width:100%;font-family:inherit;font-size:12px;background:var(--bg3);color:var(--text);border:1px solid var(--amber);border-radius:3px;padding:6px;outline:none;';
+    BU_OPTIONS.forEach(o => { const opt = new Option(o,o); if (o===current) opt.selected=true; el.appendChild(opt); });
+  } else if (type === 'select-priority') {
+    el = document.createElement('select');
+    el.style.cssText = 'width:100%;font-family:inherit;font-size:12px;background:var(--bg3);color:var(--text);border:1px solid var(--amber);border-radius:3px;padding:6px;outline:none;';
+    PRI_OPTIONS.forEach(([v,l]) => { const opt = new Option(l,v); if (v===current) opt.selected=true; el.appendChild(opt); });
+  } else if (type === 'select-status') {
+    el = document.createElement('select');
+    el.style.cssText = 'width:100%;font-family:inherit;font-size:12px;background:var(--bg3);color:var(--text);border:1px solid var(--amber);border-radius:3px;padding:6px;outline:none;';
+    STA_OPTIONS.forEach(([v,l]) => { const opt = new Option(l,v); if (v===current) opt.selected=true; el.appendChild(opt); });
+  }
+
+  function commit() {
+    const newVal = el.tagName === 'SELECT' ? el.value : el.value.trim();
+    if (field === 'businessUnit' && newVal === 'Personal' && !personalUnlocked) {
+      toast('🔒 Unlock Personal first.', 'var(--amber)');
+      renderTable();
+      return;
+    }
+    r[field] = newVal;
+    saveData();
+    renderTable();
+    updateStats();
+  }
+
+  el.addEventListener('blur', commit);
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && el.tagName !== 'TEXTAREA') { e.preventDefault(); el.blur(); }
+    if (e.key === 'Escape') { el.removeEventListener('blur', commit); renderTable(); }
+  });
+  el.addEventListener('click', e => e.stopPropagation());
+
+  td.innerHTML = '';
+  td.appendChild(el);
+  el.focus();
+  if (el.tagName !== 'SELECT') { el.setSelectionRange(el.value.length, el.value.length); }
+}
+
+function updateStats() {
+  document.getElementById('totalCount').textContent    = data.length;
+  document.getElementById('criticalCount').textContent = data.filter(r => r.priority === 'Critical').length;
+  document.getElementById('doneCount').textContent     = data.filter(r => r.status === 'Done').length;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function sortBy(key) {
+  if (sortKey === key) { sortDir *= -1; } else { sortKey = key; sortDir = 1; }
+  document.querySelectorAll('th.sortable').forEach(th => th.classList.remove('sorted'));
+  document.querySelectorAll('th.sortable').forEach(th => {
+    if (th.getAttribute('onclick') && th.getAttribute('onclick').includes(key)) th.classList.add('sorted');
+  });
+  renderTable();
+}
+
+// Modal
+function openModal(id) {
+  editingId = id || null;
+  document.getElementById('modalTitle').textContent = id ? 'EDIT USE CASE' : 'ADD USE CASE';
+  document.getElementById('saveBtn').textContent = id ? 'UPDATE' : 'SAVE USE CASE';
+
+  if (id) {
+    const r = data.find(d => d.id === id);
+    document.getElementById('fBU').value       = r.businessUnit;
+    document.getElementById('fPriority').value = r.priority;
+    document.getElementById('fName').value     = r.name;
+    document.getElementById('fDesc').value     = r.description;
+    document.getElementById('fOwner').value    = r.owner;
+    document.getElementById('fStatus').value   = r.status || 'Planned';
+    document.getElementById('fOutput').value   = r.output || '';
+  } else {
+    ['fBU','fPriority','fName','fDesc','fOwner','fOutput'].forEach(f => document.getElementById(f).value = '');
+    document.getElementById('fStatus').value = 'Planned';
+  }
+
+  document.getElementById('modalBackdrop').classList.add('open');
+  setTimeout(() => document.getElementById('fName').focus(), 80);
+}
+
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+  editingId = null;
+}
+
+function closeOnBackdrop(e) {
+  if (e.target === document.getElementById('modalBackdrop')) closeModal();
+}
+
+function saveEntry() {
+  const bu     = document.getElementById('fBU').value.trim();
+  const pri    = document.getElementById('fPriority').value;
+  const name   = document.getElementById('fName').value.trim();
+  const desc   = document.getElementById('fDesc').value.trim();
+  const own    = document.getElementById('fOwner').value.trim();
+  const status = document.getElementById('fStatus').value;
+  const output = document.getElementById('fOutput').value.trim();
+
+  if (!bu || !pri || !name || !desc) {
+    toast('⚠ Please fill in all required fields.', 'var(--amber)');
+    return;
+  }
+  if (bu === 'Personal' && !personalUnlocked) {
+    toast('🔒 Unlock Personal first.', 'var(--amber)');
+    return;
+  }
+
+  if (editingId) {
+    const r = data.find(d => d.id === editingId);
+    r.businessUnit = bu; r.priority = pri; r.name = name; r.description = desc; r.owner = own; r.status = status; r.output = output;
+    toast('✓ Use case updated.', 'var(--green)');
+  } else {
+    data.push({ id: nextId++, businessUnit: bu, priority: pri, name, description: desc, owner: own, status, output });
+    toast('✓ Use case added.', 'var(--green)');
+  }
+  saveData();
+
+  closeModal();
+  renderTable();
+}
+
+function editEntry(id) { openModal(id); }
+
+function deleteEntry(id) {
+  const r = data.find(d => d.id === id);
+  if (!confirm(`Delete "${r.name}"?`)) return;
+  data = data.filter(d => d.id !== id);
+  saveData();
+  renderTable();
+  toast('✓ Deleted.', 'var(--red)');
+}
+
+function exportCSV() {
+  const headers = ['S.No','Business Unit','Use Case Name','Use Case Description','Priority','Owner'];
+  const rows = data.map((r, i) => [
+    i + 1,
+    `"${r.businessUnit}"`,
+    `"${r.name}"`,
+    `"${r.description.replace(/"/g, '""')}"`,
+    r.priority,
+    `"${r.owner}"`
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bhookle-ai-usecases.csv';
+  a.click();
+  toast('✓ Exported to CSV.', 'var(--green)');
+}
+
+let toastTimer;
+function toast(msg, color = 'var(--green)') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = color;
+  el.style.color = color;
+  el.style.boxShadow = `0 0 16px ${color}33`;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// Keyboard: Escape to close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('modalBackdrop').classList.contains('open')) {
+    const active = document.activeElement;
+    if (active && active.tagName !== 'TEXTAREA' && active.tagName !== 'BUTTON') saveEntry();
+  }
+});
+
+renderTable();
+</script>
+</body>
+</html>

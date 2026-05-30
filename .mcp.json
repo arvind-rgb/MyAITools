@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "porter-delivery": {
+      "type": "stdio",
+      "command": "python3.11",
+      "args": ["/Users/arvind/Documents/BhookleDev/porter_mcp_server.py"],
+      "env": {
+        "PYTHONPATH": "/Users/arvind/Documents/BhookleDev"
+      }
+    }
+  }
+}

@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bhookle — Investment Leads 🍱</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Variables ── */
+    :root {
+      --amber:   #FFA70B;
+      --amber-d: #e8950a;
+      --amber-l: #fff3d6;
+      --purple:  #341C3D;
+      --purple-l:#4a2a5a;
+      --purple-ll:#f0eaf3;
+      --white:   #FFFFFF;
+      --offwhite:#F5F5F5;
+      --charcoal:#333333;
+      --grey:    #AAAAAA;
+      --grey-l:  #e8e8e8;
+      --green:   #22c55e;
+      --blue:    #3b82f6;
+      --red:     #ef4444;
+      --yellow:  #f59e0b;
+      --radius:  12px;
+      --shadow:  0 2px 12px rgba(52,28,61,0.10);
+      --shadow-lg: 0 8px 32px rgba(52,28,61,0.18);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--offwhite);
+      color: var(--charcoal);
+      font-size: 13px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--purple);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(52,28,61,0.35);
+      overflow: hidden;
+    }
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+      overflow: hidden;
+    }
+    .logo-wrap a { display: flex; align-items: center; height: 40px; }
+    .logo-wrap img {
+      height: 36px;
+      max-height: 36px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .header-tagline {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+    }
+    .header-right { display: flex; gap: 10px; align-items: center; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-amber { background: var(--amber); color: var(--white); }
+    .btn-amber:hover { background: var(--amber-d); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,167,11,0.4); }
+    .btn-purple { background: var(--purple); color: var(--white); }
+    .btn-purple:hover { background: var(--purple-l); }
+    .btn-outline { background: transparent; color: rgba(255,255,255,0.8); border: 1.5px solid rgba(255,255,255,0.25); }
+    .btn-outline:hover { border-color: var(--amber); color: var(--amber); }
+    .btn-ghost { background: transparent; color: var(--grey); border: 1.5px solid var(--grey-l); }
+    .btn-ghost:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-l); }
+    .btn-sm { padding: 5px 10px; font-size: 11px; border-radius: 6px; }
+    .btn-danger { background: #fdecea; color: var(--red); border: 1px solid #fca5a5; }
+    .btn-danger:hover { background: var(--red); color: white; }
+    /* ── Sortable Headers ── */
+    thead th.sortable { cursor: pointer; user-select: none; }
+    thead th.sortable:hover { color: var(--amber); }
+    thead th.sort-asc .sort-icon::after  { content: ' ↑'; }
+    thead th.sort-desc .sort-icon::after { content: ' ↓'; }
+    .sort-icon { opacity: 0.45; font-size: 10px; }
+    thead th.sort-asc .sort-icon,
+    thead th.sort-desc .sort-icon { opacity: 1; color: var(--amber); }
+
+    /* ── Follow Up Date ── */
+    .followup-input {
+      width: 100%;
+      border: 1px solid var(--grey-l);
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      color: var(--charcoal);
+      background: var(--offwhite);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.12s;
+    }
+    .followup-input:focus { border-color: var(--amber); background: var(--white); }
+    .followup-input::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
+
+    .btn-delete-inline {
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      color: var(--grey-l);
+      cursor: pointer;
+      padding: 3px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: color 0.12s, background 0.12s;
+    }
+    .btn-delete-inline:hover { color: var(--red); background: #fdecea; }
+
+    /* ── Status Filter Module ── */
+    .status-module {
+      background: var(--white);
+      border-bottom: 1px solid var(--grey-l);
+      padding: 8px 20px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+      box-shadow: 0 1px 6px rgba(52,28,61,0.06);
+    }
+    .status-module-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--grey);
+      margin-right: 4px;
+    }
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 13px;
+      border-radius: 24px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+      border: 2px solid var(--grey-l);
+      color: var(--charcoal);
+      background: var(--offwhite);
+    }
+    .stat-chip .count {
+      background: rgba(52,28,61,0.08);
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .stat-chip.all:hover, .stat-chip.all.active     { border-color: var(--amber); color: var(--amber-d); background: var(--amber-l); }
+    .stat-chip.s-new:hover, .stat-chip.s-new.active { border-color: #3b82f6; color: #1d4ed8; background: #eff6ff; }
+    .stat-chip.s-reached:hover, .stat-chip.s-reached.active { border-color: #22c55e; color: #15803d; background: #f0fdf4; }
+    .stat-chip.s-engaged:hover, .stat-chip.s-engaged.active { border-color: #a855f7; color: #7e22ce; background: #fdf4ff; }
+    .stat-chip.s-noresp:hover, .stat-chip.s-noresp.active   { border-color: #f59e0b; color: #a16207; background: #fefce8; }
+    .stat-chip.s-notint:hover, .stat-chip.s-notint.active   { border-color: #ef4444; color: #be123c; background: #fff1f2; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      padding: 10px 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--white);
+      border-bottom: 1px solid var(--grey-l);
+    }
+    .search-wrap { position: relative; flex: 1; min-width: 220px; max-width: 380px; }
+    .search-wrap .ico { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--grey); }
+    .search-input {
+      width: 100%;
+      background: var(--offwhite);
+      border: 1.5px solid var(--grey-l);
+      border-radius: 8px;
+      padding: 9px 12px 9px 34px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-input:focus { border-color: var(--amber); background: var(--white); }
+    .search-input::placeholder { color: var(--grey); }
+    .filter-select {
+      background: var(--offwhite);
+      border: 1.5px solid var(--grey-l);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: var(--charcoal);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .filter-select:focus { border-color: var(--amber); }
+    .result-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--grey);
+      font-family: 'Roboto', sans-serif;
+    }
+    .result-count strong { color: var(--purple); font-weight: 700; }
+
+    /* ── Table ── */
+    .table-wrap { padding: 14px 20px 32px; overflow-x: auto; }
+    .table-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      border: 1px solid var(--grey-l);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--purple); }
+    thead th {
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: rgba(255,255,255,0.6);
+      white-space: nowrap;
+      border-bottom: 2px solid var(--amber);
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--offwhite);
+      transition: background 0.12s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fdf9f0; }
+    td { padding: 8px 10px; vertical-align: top; font-family: 'Roboto', sans-serif; }
+
+    /* ── Cell: Investor ── */
+    .investor-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 12px; color: var(--purple); line-height: 1.3; }
+    .type-badge {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 1px 6px;
+      border-radius: 20px;
+      font-size: 9px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .t-vc       { background: #eef2ff; color: #4f46e5; }
+    .t-pe       { background: #f0f9ff; color: #0369a1; }
+    .t-angel    { background: #f0fdf4; color: #15803d; }
+    .t-angelnet { background: #fefce8; color: #a16207; }
+    .t-family   { background: #fdf4ff; color: #9333ea; }
+    .t-corporate{ background: #f0fdfa; color: #0f766e; }
+    .t-accel    { background: #fff7ed; color: #c2410c; }
+
+    /* ── Cell: Company ── */
+    .company-name { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; }
+    .company-sector { font-size: 11px; color: var(--grey); margin-top: 2px; }
+
+    /* ── Cell: Amount ── */
+    .amount { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 14px; color: var(--amber-d); }
+    .round-tag {
+      display: inline-block;
+      margin-top: 3px;
+      background: var(--purple-ll);
+      color: var(--purple);
+      padding: 1px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+    }
+    .source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      color: var(--grey);
+      text-decoration: none;
+      margin-top: 4px;
+    }
+    .source-link:hover { color: var(--amber-d); }
+
+    /* ── Cell: Contact ── */
+    .contact-name { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 11px; color: var(--charcoal); }
+    .contact-links { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+    .contact-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1.5px solid;
+      transition: all 0.12s;
+    }
+    .pill-email { color: #15803d; border-color: #86efac; background: #f0fdf4; }
+    .pill-email:hover { background: #15803d; color: white; }
+    .contact-field {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .contact-field svg { color: var(--grey); flex-shrink: 0; }
+    .contact-field-input {
+      flex: 1;
+      border: none;
+      border-bottom: 1px dashed var(--grey-l);
+      background: transparent;
+      font-size: 10px;
+      font-family: 'Roboto', sans-serif;
+      color: #0369a1;
+      padding: 1px 2px;
+      outline: none;
+      min-width: 0;
+      max-width: 160px;
+      text-overflow: ellipsis;
+    }
+    .contact-field-input:focus { border-bottom-color: var(--amber); background: var(--amber-l); border-radius: 3px 3px 0 0; }
+    .contact-field-input::placeholder { color: var(--grey); font-style: italic; }
+    .add-contact-wrap { display: flex; flex-direction: column; }
+    .btn-add-contact {
+      align-self: flex-start;
+      background: transparent;
+      color: var(--amber-d);
+      border: 1px solid var(--amber);
+      border-radius: 4px;
+      font-size: 9px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      padding: 1px 6px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: all 0.12s;
+    }
+    .btn-add-contact:hover { background: var(--amber); color: white; }
+    .btn-enrich-contact {
+      background: transparent;
+      border: 1px solid var(--purple-ll);
+      border-radius: 4px;
+      font-size: 10px;
+      padding: 1px 5px;
+      cursor: pointer;
+      color: var(--purple);
+      transition: all 0.12s;
+      line-height: 1.4;
+    }
+    .btn-enrich-contact:hover { background: var(--purple); color: white; }
+    .btn-enrich-contact:disabled { opacity: 0.5; cursor: not-allowed; }
+    .pill-linkedin { color: #0369a1; border-color: #93c5fd; background: #f0f9ff; }
+    .pill-linkedin:hover { background: #0369a1; color: white; }
+    .na { color: var(--grey-l); font-style: italic; font-size: 11px; }
+
+    /* ── Cell: Recent Investments ── */
+    .recent-invest { font-size: 11px; color: var(--charcoal); line-height: 1.5; max-width: 160px; }
+    .recent-invest .tag {
+      display: inline-block;
+      background: var(--amber-l);
+      color: var(--amber-d);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      margin: 1px 2px 1px 0;
+    }
+    .btn-fetch-recent {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: var(--purple-ll);
+      color: var(--purple);
+      border: 1.5px solid #c8aad8;
+      border-radius: 6px;
+      font-size: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+      margin-top: 3px;
+    }
+    .btn-fetch-recent:hover { background: var(--purple); color: white; }
+
+    /* ── Cell: Status ── */
+    .status-select {
+      width: 100%;
+      min-width: 118px;
+      padding: 4px 22px 4px 7px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      transition: all 0.12s;
+    }
+    .s-New          { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .s-ReachedOut   { background: #f0fdf4; color: #15803d; border-color: #86efac; }
+    .s-Engaged      { background: #fdf4ff; color: #7e22ce; border-color: #d8b4fe; }
+    .s-DidntRespond { background: #fefce8; color: #a16207; border-color: #fde68a; }
+    .s-NotInterested{ background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+
+    /* ── Cell: Notes ── */
+    .notes-ta {
+      width: 100%;
+      min-width: 100px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      padding: 4px 6px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 11px;
+      color: var(--charcoal);
+      resize: none;
+      min-height: 32px;
+      outline: none;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .notes-ta:hover { border-color: var(--grey-l); background: var(--offwhite); }
+    .notes-ta:focus { border-color: var(--amber); background: var(--white); }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--grey);
+    }
+    .empty .emoji { font-size: 56px; margin-bottom: 12px; display: block; }
+    .empty p { font-size: 16px; font-family: 'Poppins', sans-serif; font-weight: 600; }
+
+    /* ── Modal ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(52,28,61,0.6);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--white);
+      border-radius: 16px;
+      width: 580px;
+      max-width: 95vw;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-head {
+      padding: 22px 26px 16px;
+      border-bottom: 2px solid var(--offwhite);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-head h2 { font-size: 17px; font-weight: 700; color: var(--purple); }
+    .modal-close { background: none; border: none; font-size: 22px; color: var(--grey); cursor: pointer; line-height:1; }
+    .modal-close:hover { color: var(--red); }
+    .modal-body { padding: 22px 26px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .fg-full { grid-column: 1/-1; }
+    .form-label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--grey); margin-bottom: 5px; }
+    .form-input, .form-select {
+      width: 100%;
+      background: var(--offwhite);
+      border: 1.5px solid var(--grey-l);
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.12s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--amber); background: var(--white); }
+    .modal-foot {
+      padding: 16px 26px 22px;
+      border-top: 1px solid var(--offwhite);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* ── Money Rain ── */
+    #money-rain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    /* Lift all content above the rain */
+    .fun-bar, header, .status-module, .toolbar, .table-wrap {
+      position: relative;
+      z-index: 2;
+    }
+    .bill {
+      position: absolute;
+      top: -60px;
+      font-size: 22px;
+      opacity: 0;
+      animation: fall linear infinite;
+      user-select: none;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg) scale(1);   opacity: 0; }
+      5%   { opacity: 0.55; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(110vh) rotate(360deg) scale(0.8); opacity: 0; }
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.22s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+      box-shadow: var(--shadow-lg);
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { background: var(--purple); color: var(--amber); border-left: 4px solid var(--amber); }
+    #toast.error   { background: #fff1f2; color: var(--red); border-left: 4px solid var(--red); }
+    #toast.info    { background: var(--amber); color: var(--purple); border-left: 4px solid var(--purple); }
+
+    /* ── Spinner ── */
+    .spin {
+      display: inline-block; width: 13px; height: 13px;
+      border: 2px solid transparent; border-top-color: currentColor;
+      border-radius: 50%; animation: spin .6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Fun accent bar ── */
+    .fun-bar {
+      background: linear-gradient(90deg, var(--amber) 0%, #ffcf60 50%, var(--amber) 100%);
+      height: 3px;
+    }
+
+    /* ── Gmail status pill ── */
+    .gmail-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 11px; border-radius: 20px; font-size: 11px;
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+      cursor: pointer; border: none; transition: all 0.15s;
+    }
+    .gmail-pill.connected    { background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; }
+    .gmail-pill.disconnected { background:#fff1f2; color:#be123c; border:1.5px solid #fecdd3; }
+    .gmail-pill.disconnected:hover { background:#be123c; color:white; }
+
+    /* ── Row checkboxes ── */
+    .row-check { width: 15px; height: 15px; cursor: pointer; accent-color: var(--purple); }
+    .th-check  { width: 32px; text-align: center; }
+
+    /* ── Bulk action bar ── */
+    #bulk-bar {
+      display: none;
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--purple); color: white;
+      border-radius: 40px; padding: 10px 20px;
+      box-shadow: 0 8px 32px rgba(52,28,61,0.45);
+      align-items: center; gap: 14px;
+      z-index: 300; font-family: 'Poppins', sans-serif;
+      font-size: 13px; font-weight: 600;
+      white-space: nowrap;
+    }
+    #bulk-bar.show { display: flex; }
+    #bulk-bar select {
+      background: rgba(255,255,255,0.15); color: white;
+      border: 1.5px solid rgba(255,255,255,0.3); border-radius: 8px;
+      padding: 5px 10px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      outline: none; min-width: 180px;
+    }
+    #bulk-bar select option { background: var(--purple); }
+
+    /* ── Email outreach button ── */
+    .btn-outreach {
+      background: transparent;
+      border: 1px solid #c4b5fd;
+      border-radius: 4px;
+      font-size: 10px;
+      padding: 1px 5px;
+      cursor: pointer;
+      color: #7c3aed;
+      transition: all 0.12s;
+      line-height: 1.4;
+    }
+    .btn-outreach:hover { background: #7c3aed; color: white; border-color: #7c3aed; }
+
+    /* ── Template cards ── */
+    .tpl-card {
+      border: 1.5px solid var(--grey-l);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      background: var(--white);
+      transition: border-color 0.12s;
+    }
+    .tpl-card:hover { border-color: #c4b5fd; }
+    .tpl-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .tpl-card-name { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 13px; color: var(--purple); }
+    .tpl-card-subject { font-size: 11px; color: var(--grey); margin-top: 2px; }
+    .tpl-card-preview {
+      font-size: 11px; color: var(--charcoal); margin-top: 6px;
+      white-space: pre-wrap; line-height: 1.5;
+      max-height: 52px; overflow: hidden;
+      position: relative;
+    }
+    .tpl-card-preview::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 20px;
+      background: linear-gradient(transparent, var(--white));
+    }
+    .tpl-edit-form { display: none; margin-top: 12px; border-top: 1px solid var(--grey-l); padding-top: 12px; }
+    .tpl-edit-form.open { display: block; }
+
+    /* ── Email draft modal inputs ── */
+    .draft-section-label {
+      display: block; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      color: var(--grey); margin-bottom: 5px;
+    }
+    .draft-field-input {
+      width: 100%; background: var(--offwhite);
+      border: 1.5px solid var(--grey-l); border-radius: 8px;
+      padding: 8px 11px; font-family: 'Poppins', sans-serif;
+      font-size: 13px; color: var(--charcoal); outline: none;
+      transition: border-color 0.12s; margin-bottom: 12px;
+    }
+    .draft-field-input:focus { border-color: var(--amber); background: var(--white); }
+    .draft-body-ta {
+      width: 100%; min-height: 220px;
+      border: 1.5px solid var(--grey-l); border-radius: 8px;
+      padding: 10px 12px; font-family: 'Roboto', sans-serif;
+      font-size: 13px; line-height: 1.65; color: var(--charcoal);
+      background: var(--offwhite); resize: vertical; outline: none;
+      transition: border-color 0.12s;
+    }
+    .draft-body-ta:focus { border-color: var(--amber); background: var(--white); }
+    .draft-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 140px; border: 2px dashed var(--grey-l); border-radius: 8px;
+      color: var(--grey); font-size: 13px; text-align: center;
+      flex-direction: column; gap: 10px; padding: 20px;
+    }
+    .draft-controls {
+      display: flex; gap: 10px; align-items: flex-end;
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .investor-pill {
+      background: var(--purple-ll); border-radius: 8px;
+      padding: 8px 12px; margin-bottom: 14px;
+      font-size: 12px; color: var(--purple);
+      font-family: 'Poppins', sans-serif; font-weight: 600;
+    }
+  /* ── Delivery status badges ── */
+  .del-badge { display:inline-block; padding:2px 9px; border-radius:20px; font-size:10px; font-family:'Poppins',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.4px; }
+  .del-pending    { background:#fefce8; color:#a16207; border:1px solid #fde68a; }
+  .del-booked     { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+  .del-in_transit { background:#f0fdf4; color:#15803d; border:1px solid #86efac; }
+  .del-delivered  { background:#fdf4ff; color:#7e22ce; border:1px solid #d8b4fe; }
+  .del-failed     { background:#fff1f2; color:#be123c; border:1px solid #fecdd3; }
+  .del-cancelled  { background:#f3f4f6; color:#6b7280; border:1px solid #d1d5db; }
+  </style>
+</head>
+<body>
+
+<!-- Money Rain -->
+<div id="money-rain"></div>
+
+<!-- Fun accent -->
+<div class="fun-bar"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo-wrap">
+    <a href="/"><img src="/static/bhookle_logo.png" alt="Bhookle" /></a>
+    <div class="header-tagline">Investment Lead Tracker</div>
+  </div>
+  <div class="header-right">
+    <a href="/api/export" class="btn btn-outline">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export CSV
+    </a>
+    <button id="gmailPill" class="gmail-pill disconnected" onclick="handleGmailPillClick()" title="Connect Gmail to send emails">
+      ✉ Gmail: Not Connected
+    </button>
+    <button class="btn btn-outline" onclick="openTemplatesModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Email Templates
+    </button>
+    <button class="btn btn-outline" id="enrichAllBtn" onclick="enrichAll()" title="AI-enrich all leads missing contact info">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      Enrich All
+    </button>
+    <button class="btn btn-amber" id="refreshBtn" onclick="getMoreLeads()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Get More Leads
+    </button>
+    <button class="btn btn-outline" onclick="openDeliveriesModal()">
+      🛵 Deliveries
+    </button>
+    <button class="btn btn-outline" onclick="openModal()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Lead
+    </button>
+  </div>
+</header>
+
+<!-- Status Filter Module -->
+<div class="status-module">
+  <a href="/?{% if search %}search={{ search }}&{% endif %}{% if current_type %}investor_type={{ current_type }}&{% endif %}"
+     class="stat-chip all {% if not current_status %}active{% endif %}">
+    🍱 All <span class="count">{{ total }}</span>
+  </a>
+  <a href="/?status=New{% if search %}&search={{ search }}{% endif %}{% if current_type %}&investor_type={{ current_type }}{% endif %}"
+     class="stat-chip s-new {% if current_status == 'New' %}active{% endif %}">
+    🔵 New <span class="count">{{ status_counts.get('New', 0) }}</span>
+  </a>
+  <a href="/?status=Reached Out{% if search %}&search={{ search }}{% endif %}{% if current_type %}&investor_type={{ current_type }}{% endif %}"
+     class="stat-chip s-reached {% if current_status == 'Reached Out' %}active{% endif %}">
+    ✉️ Reached Out <span class="count">{{ status_counts.get('Reached Out', 0) }}</span>
+  </a>
+  <a href="/?status=Engaged{% if search %}&search={{ search }}{% endif %}{% if current_type %}&investor_type={{ current_type }}{% endif %}"
+     class="stat-chip s-engaged {% if current_status == 'Engaged' %}active{% endif %}">
+    🟣 Engaged <span class="count">{{ status_counts.get('Engaged', 0) }}</span>
+  </a>
+  <a href="/?status=Didn't Respond{% if search %}&search={{ search }}{% endif %}{% if current_type %}&investor_type={{ current_type }}{% endif %}"
+     class="stat-chip s-noresp {% if current_status == "Didn't Respond" %}active{% endif %}">
+    🟡 No Response <span class="count">{{ status_counts.get("Didn't Respond", 0) }}</span>
+  </a>
+  <a href="/?status=Not Interested{% if search %}&search={{ search }}{% endif %}{% if current_type %}&investor_type={{ current_type }}{% endif %}"
+     class="stat-chip s-notint {% if current_status == 'Not Interested' %}active{% endif %}">
+    🔴 Not Interested <span class="count">{{ status_counts.get('Not Interested', 0) }}</span>
+  </a>
+</div>
+
+<!-- Toolbar -->
+<form method="get" action="/" class="toolbar">
+  {% if current_status %}<input type="hidden" name="status" value="{{ current_status }}" />{% endif %}
+  <div class="search-wrap">
+    <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="search-input" name="search" placeholder="Search investors, companies, sectors…" value="{{ search }}" />
+  </div>
+  <select class="filter-select" name="investor_type" onchange="this.form.submit()">
+    <option value="">All Types</option>
+    {% for t in investor_types %}
+    <option value="{{ t }}" {% if current_type == t %}selected{% endif %}>{{ t }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-ghost btn-sm">Search</button>
+  {% if search or current_type %}
+  <a href="/?{% if current_status %}status={{ current_status }}{% endif %}" class="btn btn-ghost btn-sm">✕ Clear</a>
+  {% endif %}
+  <span class="result-count"><strong>{{ leads|length }}</strong> result{{ 's' if leads|length != 1 else '' }}</span>
+</form>
+
+<!-- Table -->
+<div class="table-wrap">
+  <div class="table-card">
+    {% if leads %}
+    <table>
+      <thead>
+        <tr>
+          <th class="th-check"><input type="checkbox" class="row-check" id="check-all" onchange="toggleAllChecks(this)" title="Select all"></th>
+          <th class="sortable" onclick="sortTable(1)">Investor <span class="sort-icon">⇅</span></th>
+          <th class="sortable" onclick="sortTable(2)">Key Contact <span class="sort-icon">⇅</span></th>
+          <th class="sortable" onclick="sortTable(3)">Status <span class="sort-icon">⇅</span></th>
+          <th>Notes</th>
+          <th class="sortable" onclick="sortTable(5)">Follow Up <span class="sort-icon">⇅</span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lead in leads %}
+        <tr id="row-{{ lead.id }}">
+          <td style="width:32px;text-align:center">
+            <input type="checkbox" class="row-check lead-check"
+              data-lead-id="{{ lead.id }}"
+              data-email="{{ (lead.email or '').split(',')[0].strip() }}"
+              onchange="onCheckChange()">
+          </td>
+
+          <!-- Investor -->
+          <td style="width:200px">
+            <div class="investor-name">{{ lead.investor_name }}</div>
+            {% if lead.investor_type %}
+            <span class="type-badge t-{{ lead.investor_type|lower|replace(' ','')|replace('/','')|replace('network','angelnet')|truncate(10,false,'') }}">
+              {{ lead.investor_type }}
+            </span>
+            {% endif %}
+          </td>
+
+          <!-- Contact -->
+          <td style="width:220px">
+            {% if lead.key_contact %}
+            {% set names = lead.key_contact.split(',') %}
+            {% set emails = (lead.email or '').split(',') %}
+            {% set linkedins = (lead.linkedin or '').split(',') %}
+            {% for name in names %}
+            {% set i = loop.index0 %}
+            {% set c_email = emails[i].strip() if i < emails|length else '' %}
+            {% set c_linkedin = linkedins[i].strip() if i < linkedins|length else '' %}
+            <div style="{% if not loop.first %}margin-top:8px;padding-top:8px;border-top:1px solid var(--grey-l);{% endif %}">
+              <div class="contact-name">{{ name.strip() }}</div>
+              <div class="contact-field">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <input class="contact-field-input" type="email"
+                  placeholder="+ add email"
+                  value="{{ c_email }}"
+                  data-lead-id="{{ lead.id }}"
+                  data-field="email"
+                  onblur="saveContactDetail({{ lead.id }}, 'email')" />
+              </div>
+              <div class="contact-field">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <input class="contact-field-input" type="url"
+                  placeholder="+ add linkedin"
+                  value="{{ c_linkedin }}"
+                  data-lead-id="{{ lead.id }}"
+                  data-field="linkedin"
+                  onblur="saveContactDetail({{ lead.id }}, 'linkedin')" />
+              </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            <!-- Add new contact form (shown/hidden for all rows) -->
+            <div id="add-contact-{{ lead.id }}" style="display:none;margin-top:6px;padding-top:6px;border-top:1px dashed var(--grey-l)">
+              <input class="contact-field-input" type="text"
+                placeholder="name" id="add-name-{{ lead.id }}" style="display:block;max-width:100%;margin-bottom:3px" />
+              <input class="contact-field-input" type="email"
+                placeholder="email" id="add-email-{{ lead.id }}" style="display:block;max-width:100%;margin-bottom:3px" />
+              <input class="contact-field-input" type="url"
+                placeholder="linkedin" id="add-linkedin-{{ lead.id }}" style="display:block;max-width:100%;margin-bottom:5px" />
+              <button class="btn-add-contact" onclick="addContact({{ lead.id }})">✓ Save</button>
+            </div>
+            <div style="display:flex;gap:5px;margin-top:5px;align-items:center">
+              <button class="btn-add-contact" onclick="toggleAddContact({{ lead.id }})">+</button>
+              <button class="btn-enrich-contact" id="enrich-btn-{{ lead.id }}" onclick="enrichLead({{ lead.id }})" title="AI: find best D2C contact">🔍</button>
+              <button class="btn-outreach"
+                data-lead-id="{{ lead.id }}"
+                data-lead-name="{{ lead.investor_name }}"
+                data-lead-type="{{ lead.investor_type or '' }}"
+                data-email="{{ (lead.email or '').split(',')[0].strip() }}"
+                onclick="openEmailDraft(this)"
+                title="Draft & send outreach email">✉</button>
+            </div>
+          </td>
+
+          <!-- Status -->
+          <td style="width:130px">
+            <select
+              class="status-select s-{{ lead.status|replace(' ','')|replace("'","") }}"
+              onchange="updateStatus({{ lead.id }}, this)"
+            >
+              <option value="New"             {% if lead.status=='New' %}selected{% endif %}>🔵 New</option>
+              <option value="Reached Out"     {% if lead.status=='Reached Out' %}selected{% endif %}>✉️ Reached Out</option>
+              <option value="Engaged"         {% if lead.status=='Engaged' %}selected{% endif %}>🟣 Engaged</option>
+              <option value="Didn't Respond"  {% if lead.status=="Didn't Respond" %}selected{% endif %}>🟡 No Response</option>
+              <option value="Not Interested"  {% if lead.status=='Not Interested' %}selected{% endif %}>🔴 Not Interested</option>
+            </select>
+          </td>
+
+          <!-- Notes -->
+          <td style="width:168px">
+            <textarea class="notes-ta" rows="2" placeholder="Jot something down…"
+              onblur="saveNotes({{ lead.id }}, this)">{{ lead.notes or '' }}</textarea>
+          </td>
+
+          <!-- Follow Up -->
+          <td style="width:110px">
+            <input type="date" class="followup-input"
+              value="{{ lead.follow_up_date or '' }}"
+              onchange="saveFollowUp({{ lead.id }}, this.value)" />
+          </td>
+
+          <!-- Delete -->
+          <td style="width:32px;text-align:center">
+            <button class="btn-delete-inline" onclick="deleteLead({{ lead.id }})" title="Delete">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+      <span class="emoji">🍱</span>
+      <p>No leads here yet — hit "Get More Leads" to serve up some fresh ones!</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Add Lead Modal -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>🍽️ Add New Lead</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg-full">
+          <label class="form-label">Investor Name *</label>
+          <input class="form-input" id="f_investor_name" placeholder="e.g. Sequoia Capital India" />
+        </div>
+        <div class="fg-full">
+          <label class="form-label">Investor Type</label>
+          <select class="form-select" id="f_investor_type">
+            <option value="">Select type</option>
+            <option>VC</option><option>PE</option><option>Angel</option>
+            <option>Angel Network</option><option>Family Office</option><option>Corporate VC</option><option>Accelerator</option>
+          </select>
+        </div>
+        <div class="fg-full">
+          <label class="form-label">Key Contact</label>
+          <input class="form-input" id="f_key_contact" placeholder="e.g. Rajan Anandan" />
+        </div>
+        <div>
+          <label class="form-label">Email</label>
+          <input class="form-input" id="f_email" type="email" placeholder="contact@firm.com" />
+        </div>
+        <div>
+          <label class="form-label">LinkedIn</label>
+          <input class="form-input" id="f_linkedin" placeholder="https://linkedin.com/in/…" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-amber" onclick="submitLead()">🍜 Add Lead</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ── Bulk action bar ── -->
+<div id="bulk-bar">
+  <span id="bulk-count">0 leads selected</span>
+  <select id="bulk-tpl-select">
+    <option value="">Select template…</option>
+  </select>
+  <button class="btn btn-amber" onclick="startBulkSend()">
+    🚀 Send AI Emails
+  </button>
+  <button class="btn btn-ghost" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2)" onclick="clearSelection()">✕</button>
+</div>
+
+<!-- ── Bulk send progress modal ── -->
+<div class="overlay" id="bulkModal">
+  <div class="modal" style="width:560px">
+    <div class="modal-head">
+      <h2>🚀 Bulk Email Send</h2>
+      <button class="modal-close" onclick="closeBulkModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="bulk-progress-header" style="margin-bottom:14px;font-size:13px;color:var(--grey)">
+        Generating personalised AI drafts and sending…
+      </div>
+      <div id="bulk-results" style="max-height:320px;overflow-y:auto"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-amber" id="bulkDoneBtn" onclick="closeBulkModal()" style="display:none">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Templates Modal ── -->
+<div class="overlay" id="templatesModal">
+  <div class="modal" style="width:700px;max-height:88vh;display:flex;flex-direction:column">
+    <div class="modal-head">
+      <h2>📧 Email Templates</h2>
+      <button class="modal-close" onclick="closeTemplatesModal()">×</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;flex:1">
+      <p style="font-size:12px;color:var(--grey);margin-bottom:14px">
+        Paste your real past emails here. Claude will use your exact tone &amp; style to personalise them per investor.
+      </p>
+      <div id="tpl-list"></div>
+      <div style="margin-top:16px;border-top:1px dashed var(--grey-l);padding-top:16px">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="toggleAddTplForm()" id="addTplToggleBtn">＋ New Template</button>
+        <div id="add-tpl-form" style="display:none;margin-top:14px">
+          <div style="margin-bottom:10px">
+            <label class="form-label">Template Name</label>
+            <input class="form-input" id="tpl-name-in" placeholder="e.g. Initial Outreach – Food VC" />
+          </div>
+          <div style="margin-bottom:10px">
+            <label class="form-label">Email Subject</label>
+            <input class="form-input" id="tpl-subject-in" placeholder="e.g. Bhookle – Raising ₹3Cr Seed" />
+          </div>
+          <div style="margin-bottom:12px">
+            <label class="form-label">Email Body</label>
+            <textarea class="draft-body-ta" id="tpl-body-in" rows="10" placeholder="Paste your real email body here — Claude will match your tone exactly…"></textarea>
+          </div>
+          <div style="margin-bottom:14px">
+            <label class="form-label">Attachment (optional — e.g. pitch deck PDF)</label>
+            <input type="file" id="tpl-attach-in" accept=".pdf,.pptx,.ppt,.docx,.doc,.png,.jpg,.jpeg"
+              style="font-size:12px;color:var(--charcoal)" />
+            <p style="font-size:10px;color:var(--grey);margin-top:4px">Attached to every email sent with this template.</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-amber btn-sm" onclick="saveNewTemplate()">Save Template</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleAddTplForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Email Draft Modal ── -->
+<div class="overlay" id="emailDraftModal">
+  <div class="modal" style="width:680px">
+    <div class="modal-head">
+      <h2>✉ Draft Outreach Email</h2>
+      <button class="modal-close" onclick="closeEmailDraftModal()">×</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Investor info pill -->
+      <div class="investor-pill" id="draft-investor-info"></div>
+
+      <!-- Template selector + generate -->
+      <div class="draft-controls">
+        <div style="flex:1;min-width:180px">
+          <label class="draft-section-label">Base Template</label>
+          <select class="form-select" id="draft-tpl-select">
+            <option value="">Select a template…</option>
+          </select>
+        </div>
+        <button class="btn btn-purple" id="generateDraftBtn" onclick="generateAIDraft()">
+          🤖 Generate AI Draft
+        </button>
+      </div>
+
+      <!-- No templates hint -->
+      <div id="draft-no-tpl" style="display:none">
+        <div class="draft-placeholder">
+          <span style="font-size:28px">📭</span>
+          <span>No templates yet.<br>Click <strong>Email Templates</strong> in the header to add your first one.</span>
+        </div>
+      </div>
+
+      <!-- Generating spinner -->
+      <div id="draft-generating" style="display:none">
+        <div class="draft-placeholder">
+          <span class="spin" style="width:24px;height:24px;border-width:3px"></span>
+          <span>Claude is crafting your personalised email…</span>
+        </div>
+      </div>
+
+      <!-- Draft form (appears after generation) -->
+      <div id="draft-form" style="display:none">
+        <div>
+          <label class="draft-section-label">To</label>
+          <input class="draft-field-input" type="email" id="draft-to" placeholder="investor@firm.com" />
+        </div>
+        <div>
+          <label class="draft-section-label">Subject</label>
+          <input class="draft-field-input" type="text" id="draft-subject" />
+        </div>
+        <div>
+          <label class="draft-section-label">Body</label>
+          <textarea class="draft-body-ta" id="draft-body" rows="13"></textarea>
+        </div>
+        <p style="font-size:10px;color:var(--grey);margin-top:6px">✏️ Review and edit the draft before sending.</p>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeEmailDraftModal()">Cancel</button>
+      <button class="btn btn-amber" id="sendEmailBtn" onclick="sendEmailDraft()" disabled>
+        📤 Send Email
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Deliveries Modal ── -->
+<div class="overlay" id="deliveriesModal">
+  <div class="modal" style="width:820px;max-height:90vh;display:flex;flex-direction:column">
+    <div class="modal-head">
+      <h2>🛵 Porter Deliveries</h2>
+      <button class="modal-close" onclick="closeDeliveriesModal()">×</button>
+    </div>
+    <div class="modal-body" style="overflow-y:auto;flex:1;padding:20px">
+
+      <!-- Session status banner -->
+      <div id="porter-session-banner" style="display:none;margin-bottom:14px;padding:10px 14px;border-radius:8px;font-size:12px;background:#fff3d6;border:1px solid var(--amber);color:#a16207">
+        ⚠️ No active Porter session found. You need to log in to Porter once to save the session.
+        <button class="btn btn-amber" onclick="setupPorterSession()" style="margin-left:8px;padding:4px 12px;font-size:11px">
+          Setup Login
+        </button>
+      </div>
+
+      <!-- New Delivery Form -->
+      <details id="new-delivery-details" style="margin-bottom:20px;border:1px solid #e5e7eb;border-radius:10px;padding:14px">
+        <summary style="cursor:pointer;font-weight:700;font-size:13px;color:var(--purple);user-select:none">
+          ＋ Book a New Delivery
+        </summary>
+        <div style="margin-top:14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="grid-column:1/-1">
+              <label class="form-label">Pickup Address</label>
+              <input class="form-input" id="del-pickup" placeholder="e.g. 12 HSR Layout Sector 1, Bangalore 560102" />
+            </div>
+            <div style="grid-column:1/-1">
+              <label class="form-label">Drop Address</label>
+              <input class="form-input" id="del-drop" placeholder="e.g. 45 Koramangala 5th Block, Bangalore 560095" />
+            </div>
+            <div>
+              <label class="form-label">Receiver Name</label>
+              <input class="form-input" id="del-contact-name" placeholder="Receiver's full name" />
+            </div>
+            <div>
+              <label class="form-label">Receiver Phone</label>
+              <input class="form-input" id="del-contact-phone" type="tel" placeholder="10-digit mobile (e.g. 9876543210)" />
+            </div>
+            <div>
+              <label class="form-label">Pickup Time <span style="font-weight:400;color:var(--grey)">(optional — blank = now)</span></label>
+              <input class="form-input" id="del-pickup-time" type="datetime-local" />
+            </div>
+            <div>
+              <label class="form-label">Internal Notes <span style="font-weight:400;color:var(--grey)">(optional)</span></label>
+              <input class="form-input" id="del-notes" placeholder="Handle with care, etc." />
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;align-items:center">
+            <button class="btn btn-outline" onclick="getDeliveryQuote()" id="del-quote-btn">Get Quote</button>
+            <span id="del-quote-result" style="font-size:13px;font-weight:700;color:#a16207"></span>
+            <button class="btn btn-amber" onclick="bookDelivery()" id="del-book-btn" style="margin-left:auto">
+              🛵 Book Delivery
+            </button>
+          </div>
+        </div>
+      </details>
+
+      <!-- Deliveries History -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px">Delivery History</span>
+          <button class="btn btn-ghost" onclick="loadDeliveries()" style="padding:4px 10px;font-size:11px">↺ Refresh</button>
+        </div>
+        <div id="deliveries-table-wrap">
+          <p style="font-size:12px;color:var(--grey);text-align:center;padding:24px">Loading…</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Init
+refreshGmailStatus();
+
+// Money rain
+(function() {
+  const container = document.getElementById('money-rain');
+  const symbols = ['💵','💸','💰','🤑','$','₹','💵','💸'];
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('span');
+    el.className = 'bill';
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.animationDuration = (6 + Math.random() * 10) + 's';
+    el.style.animationDelay = (Math.random() * 12) + 's';
+    el.style.fontSize = (14 + Math.random() * 18) + 'px';
+    container.appendChild(el);
+  }
+})();
+
+const STATUS_CLASS = {
+  'New': 's-New', 'Reached Out': 's-ReachedOut', 'Engaged': 's-Engaged',
+  "Didn't Respond": 's-DidntRespond', 'Not Interested': 's-NotInterested'
+};
+
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.className='', 3200);
+}
+
+async function updateStatus(id, sel) {
+  const s = sel.value;
+  sel.className = `status-select ${STATUS_CLASS[s] || 's-New'}`;
+  await fetch(`/api/lead/${id}/status`, {
+    method:'PATCH', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({status: s})
+  });
+  toast(`Status → "${s}" 🎯`);
+}
+
+let ntimer = {};
+function saveNotes(id, el) {
+  clearTimeout(ntimer[id]);
+  ntimer[id] = setTimeout(() =>
+    fetch(`/api/lead/${id}/notes`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({notes: el.value})
+    }), 500);
+}
+
+async function deleteLead(id) {
+  if (!confirm('Remove this lead?')) return;
+  await fetch(`/api/lead/${id}`, {method:'DELETE'});
+  const row = document.getElementById(`row-${id}`);
+  row.style.transition = 'opacity .25s, transform .25s';
+  row.style.opacity = '0'; row.style.transform = 'translateX(20px)';
+  setTimeout(() => row.remove(), 260);
+  toast('Lead removed 🗑️');
+}
+
+async function fetchRecent(id, btn) {
+  btn.innerHTML = '<span class="spin"></span> Fetching…';
+  btn.disabled = true;
+  try {
+    const r = await fetch(`/api/lead/${id}/recent`, {method:'POST'});
+    const d = await r.json();
+    if (!r.ok) {
+      const msg = d.error || 'Error';
+      if (msg.includes('ANTHROPIC_API_KEY')) {
+        toast('Add ANTHROPIC_API_KEY to your .env file to use AI fetch 🔑', 'error');
+      } else {
+        toast(msg, 'error');
+      }
+      btn.innerHTML = '⚠ No API key';
+      btn.disabled = false;
+      return;
+    }
+    if (d.recent_investments && d.recent_investments !== 'Data unavailable') {
+      const cell = document.getElementById(`recent-cell-${id}`);
+      const tags = d.recent_investments.split(',').map(s =>
+        `<span class="tag">${s.trim()}</span>`).join('');
+      cell.innerHTML = `<div class="recent-invest">${tags}</div>`;
+      toast('Recent investments fetched! 🍴');
+    } else {
+      btn.innerHTML = '⊘ Fetch';
+      btn.disabled = false;
+    }
+  } catch { btn.innerHTML = '⊘ Fetch'; btn.disabled = false; }
+}
+
+let sortState = {col: -1, dir: 1};
+function sortTable(col) {
+  const table = document.querySelector('tbody');
+  const rows = Array.from(table.querySelectorAll('tr'));
+  const ths = document.querySelectorAll('thead th');
+  ths.forEach(th => th.classList.remove('sort-asc','sort-desc'));
+  if (sortState.col === col) sortState.dir *= -1;
+  else { sortState.col = col; sortState.dir = 1; }
+  ths[col].classList.add(sortState.dir === 1 ? 'sort-asc' : 'sort-desc');
+  rows.sort((a, b) => {
+    const aText = (a.cells[col]?.innerText || '').trim().toLowerCase();
+    const bText = (b.cells[col]?.innerText || '').trim().toLowerCase();
+    const aDate = Date.parse(aText), bDate = Date.parse(bText);
+    if (!isNaN(aDate) && !isNaN(bDate)) return (aDate - bDate) * sortState.dir;
+    return aText.localeCompare(bText) * sortState.dir;
+  });
+  rows.forEach(r => table.appendChild(r));
+}
+
+function toggleAddContact(leadId) {
+  const form = document.getElementById(`add-contact-${leadId}`);
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function enrichLead(leadId) {
+  const btn = document.getElementById(`enrich-btn-${leadId}`);
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  toast('🔍 Searching for contacts…', 'info');
+  try {
+    const r = await fetch(`/api/lead/${leadId}/enrich`, {method: 'POST'});
+    const d = await r.json();
+    if (!r.ok) { toast(d.error || 'Error enriching', 'error'); btn.textContent = '🔍'; btn.disabled = false; return; }
+    if (d.contacts && d.contacts.length > 0) {
+      toast(`✅ Found ${d.contacts.length} contact(s)! Refreshing…`);
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      toast('No contacts found for this investor 😕', 'error');
+      btn.textContent = '🔍'; btn.disabled = false;
+    }
+  } catch { toast('Something went wrong 😅', 'error'); btn.textContent = '🔍'; btn.disabled = false; }
+}
+
+async function enrichAll() {
+  const btn = document.getElementById('enrichAllBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Starting…';
+  try {
+    const r = await fetch('/api/enrich/batch', {method: 'POST'});
+    const d = await r.json();
+    if (!r.ok) {
+      toast(d.message || d.error || 'Error', 'error');
+      btn.disabled = false;
+      btn.innerHTML = '🔍 Enrich All';
+      return;
+    }
+    toast(`🔍 Enriching ${d.total} leads in background — watch the button for progress!`, 'info');
+    pollEnrichProgress();
+  } catch {
+    toast('Something went wrong 😅', 'error');
+    btn.disabled = false;
+    btn.innerHTML = '🔍 Enrich All';
+  }
+}
+
+function pollEnrichProgress() {
+  const btn = document.getElementById('enrichAllBtn');
+  const interval = setInterval(async () => {
+    try {
+      const r = await fetch('/api/enrich/status');
+      const s = await r.json();
+      btn.innerHTML = `<span class="spin"></span> ${s.done}/${s.total} enriched`;
+      if (!s.running) {
+        clearInterval(interval);
+        btn.disabled = false;
+        btn.innerHTML = '🔍 Enrich All';
+        toast(`✅ Done! Enriched ${s.enriched} leads — refreshing…`);
+        setTimeout(() => location.reload(), 1500);
+      }
+    } catch { clearInterval(interval); }
+  }, 2500);
+}
+
+async function addContact(leadId) {
+  const name = document.getElementById(`add-name-${leadId}`).value.trim();
+  const email = document.getElementById(`add-email-${leadId}`).value.trim();
+  const linkedin = document.getElementById(`add-linkedin-${leadId}`).value.trim();
+  if (!name) { toast('Name is required 🙏', 'error'); return; }
+  const r = await fetch(`/api/lead/${leadId}/contacts`, {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ names: [name], emails: [email], linkedins: [linkedin] })
+  });
+  if (r.ok) { toast('Contact saved ✓'); setTimeout(() => location.reload(), 600); }
+}
+
+async function saveFollowUp(id, date) {
+  await fetch(`/api/lead/${id}/followup`, {
+    method: 'PATCH', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({follow_up_date: date})
+  });
+  toast('Follow-up date saved 📅');
+}
+
+async function saveContactDetail(leadId, field) {
+  const inputs = document.querySelectorAll(`[data-lead-id="${leadId}"][data-field="${field}"]`);
+  const values = Array.from(inputs).map(inp => inp.value.trim());
+  const r = await fetch(`/api/lead/${leadId}/contacts`, {
+    method: 'PATCH',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({[field + 's']: values})
+  });
+  if (r.ok) toast('Contact saved ✓');
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) { return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+// ── Templates modal ───────────────────────────────────────────────────────────
+let _templates = [];
+
+async function openTemplatesModal() {
+  document.getElementById('templatesModal').classList.add('open');
+  await loadTemplates();
+}
+function closeTemplatesModal() {
+  document.getElementById('templatesModal').classList.remove('open');
+}
+
+async function loadTemplates() {
+  const r = await fetch('/api/templates');
+  _templates = await r.json();
+  renderTemplateList();
+}
+
+function renderTemplateList() {
+  const el = document.getElementById('tpl-list');
+  if (!_templates.length) {
+    el.innerHTML = '<p style="color:var(--grey);font-size:12px;font-style:italic;margin-bottom:4px">No templates yet — add your first one below.</p>';
+    return;
+  }
+  el.innerHTML = _templates.map(t => `
+    <div class="tpl-card" id="tpl-card-${t.id}">
+      <div class="tpl-card-header">
+        <div>
+          <div class="tpl-card-name">${escHtml(t.name)}</div>
+          ${t.subject ? `<div class="tpl-card-subject">Subject: ${escHtml(t.subject)}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button class="btn btn-ghost btn-sm" style="padding:3px 8px;font-size:10px" onclick="startEditTpl(${t.id})">✏ Edit</button>
+          <button class="btn btn-danger btn-sm" style="padding:3px 8px;font-size:10px" onclick="deleteTpl(${t.id})">🗑</button>
+        </div>
+      </div>
+      <div class="tpl-card-preview">${escHtml((t.body||'').substring(0,160))}</div>
+      ${t.attachment_name ? `<div style="margin-top:6px;font-size:10px;color:#0369a1">📎 ${escHtml(t.attachment_name)} <button onclick="removeAttachment(${t.id})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:10px">✕</button></div>` : ''}
+      <div class="tpl-edit-form" id="tpl-edit-${t.id}">
+        <div style="margin-bottom:8px">
+          <label class="form-label">Name</label>
+          <input class="form-input" id="edit-tpl-name-${t.id}" value="${escAttr(t.name)}" />
+        </div>
+        <div style="margin-bottom:8px">
+          <label class="form-label">Subject</label>
+          <input class="form-input" id="edit-tpl-subject-${t.id}" value="${escAttr(t.subject||'')}" />
+        </div>
+        <div style="margin-bottom:8px">
+          <label class="form-label">Body</label>
+          <textarea class="draft-body-ta" id="edit-tpl-body-${t.id}" rows="8">${escHtml(t.body||'')}</textarea>
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="form-label">Attachment ${t.attachment_name ? '(replace: ' + escHtml(t.attachment_name) + ')' : '(optional)'}</label>
+          <input type="file" id="edit-tpl-attach-${t.id}" accept=".pdf,.pptx,.ppt,.docx,.doc,.png,.jpg" style="font-size:11px" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-amber btn-sm" onclick="saveEditTpl(${t.id})">Save</button>
+          <button class="btn btn-ghost btn-sm" onclick="cancelEditTpl(${t.id})">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAddTplForm() {
+  const f = document.getElementById('add-tpl-form');
+  const open = f.style.display !== 'none';
+  f.style.display = open ? 'none' : 'block';
+  document.getElementById('addTplToggleBtn').textContent = open ? '＋ New Template' : '✕ Cancel';
+  if (!open) document.getElementById('tpl-name-in').focus();
+}
+
+async function saveNewTemplate() {
+  const name    = document.getElementById('tpl-name-in').value.trim();
+  const subject = document.getElementById('tpl-subject-in').value.trim();
+  const body    = document.getElementById('tpl-body-in').value.trim();
+  if (!name || !body) { toast('Name and body are required 🙏', 'error'); return; }
+  const r = await fetch('/api/templates', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({name, subject, body})
+  });
+  if (!r.ok) { toast('Failed to save template 😬', 'error'); return; }
+  const d = await r.json();
+
+  // Upload attachment if selected
+  const fileInput = document.getElementById('tpl-attach-in');
+  if (fileInput.files.length > 0) {
+    const fd = new FormData();
+    fd.append('file', fileInput.files[0]);
+    await fetch(`/api/templates/${d.id}/attachment`, {method:'POST', body: fd});
+  }
+
+  toast('Template saved ✅');
+  document.getElementById('tpl-name-in').value    = '';
+  document.getElementById('tpl-subject-in').value = '';
+  document.getElementById('tpl-body-in').value    = '';
+  fileInput.value = '';
+  document.getElementById('add-tpl-form').style.display = 'none';
+  document.getElementById('addTplToggleBtn').textContent = '＋ New Template';
+  await loadTemplates();
+}
+
+function startEditTpl(id)  { document.getElementById(`tpl-edit-${id}`).classList.add('open'); }
+function cancelEditTpl(id) { document.getElementById(`tpl-edit-${id}`).classList.remove('open'); }
+
+async function saveEditTpl(id) {
+  const name    = document.getElementById(`edit-tpl-name-${id}`).value.trim();
+  const subject = document.getElementById(`edit-tpl-subject-${id}`).value.trim();
+  const body    = document.getElementById(`edit-tpl-body-${id}`).value.trim();
+  if (!name || !body) { toast('Name and body are required 🙏', 'error'); return; }
+  const r = await fetch(`/api/templates/${id}`, {
+    method: 'PUT', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({name, subject, body})
+  });
+  if (!r.ok) { toast('Failed to update 😬', 'error'); return; }
+  // Upload new attachment if selected
+  const fi = document.getElementById(`edit-tpl-attach-${id}`);
+  if (fi && fi.files.length > 0) {
+    const fd = new FormData(); fd.append('file', fi.files[0]);
+    await fetch(`/api/templates/${id}/attachment`, {method:'POST', body: fd});
+  }
+  toast('Template updated ✅'); await loadTemplates();
+}
+
+async function removeAttachment(id) {
+  await fetch(`/api/templates/${id}/attachment`, {method:'DELETE'});
+  toast('Attachment removed'); await loadTemplates();
+}
+
+async function deleteTpl(id) {
+  if (!confirm('Delete this template? This cannot be undone.')) return;
+  const r = await fetch(`/api/templates/${id}`, {method:'DELETE'});
+  if (r.ok) { toast('Template deleted 🗑️'); await loadTemplates(); }
+}
+
+// ── Gmail status ─────────────────────────────────────────────────────────────
+let _gmailConnected = false;
+
+async function refreshGmailStatus() {
+  try {
+    const r = await fetch('/api/gmail/status');
+    const d = await r.json();
+    _gmailConnected = d.connected;
+    const pill = document.getElementById('gmailPill');
+    if (d.connected) {
+      pill.className = 'gmail-pill connected';
+      pill.textContent = '✉ Gmail: Connected';
+      pill.title = 'Gmail connected — click to disconnect';
+    } else {
+      pill.className = 'gmail-pill disconnected';
+      pill.textContent = '✉ Gmail: Not Connected';
+      pill.title = d.has_credentials_json
+        ? 'Click to authorise Gmail sending'
+        : 'credentials.json not found — see setup instructions';
+    }
+  } catch {}
+}
+
+function handleGmailPillClick() {
+  if (_gmailConnected) {
+    if (confirm('Disconnect Gmail? You won\'t be able to send emails until you reconnect.')) {
+      fetch('/api/gmail/disconnect', {method:'POST'}).then(() => refreshGmailStatus());
+    }
+  } else {
+    // Check if credentials.json exists
+    fetch('/api/gmail/status').then(r => r.json()).then(d => {
+      if (!d.has_credentials_json) {
+        alert(
+          'One-time setup needed:\n\n' +
+          '1. Go to console.cloud.google.com\n' +
+          '2. Create a project → APIs & Services → Library → enable Gmail API\n' +
+          '3. Credentials → Create OAuth 2.0 Client ID (type: Web app)\n' +
+          '4. Add authorised redirect URI:\n   http://localhost:5050/api/gmail/callback\n' +
+          '5. Download JSON → rename to credentials.json\n' +
+          '6. Put it in: /Users/arvind/Documents/BhookleDev/\n' +
+          '7. Click the Gmail pill again to authorise'
+        );
+      } else {
+        window.location.href = '/api/gmail/auth';
+      }
+    });
+  }
+}
+
+// ── Bulk send ─────────────────────────────────────────────────────────────────
+function onCheckChange() {
+  const checked = document.querySelectorAll('.lead-check:checked');
+  const bar     = document.getElementById('bulk-bar');
+  const countEl = document.getElementById('bulk-count');
+  if (checked.length > 0) {
+    bar.classList.add('show');
+    countEl.textContent = `${checked.length} lead${checked.length > 1 ? 's' : ''} selected`;
+    // Populate template selector in bulk bar
+    const sel = document.getElementById('bulk-tpl-select');
+    sel.innerHTML = '<option value="">Select template…</option>';
+    _templates.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t.id; o.textContent = t.name;
+      sel.appendChild(o);
+    });
+    // If templates not loaded yet, fetch
+    if (_templates.length === 0) {
+      fetch('/api/templates').then(r => r.json()).then(ts => {
+        _templates = ts;
+        sel.innerHTML = '<option value="">Select template…</option>';
+        ts.forEach(t => { const o = document.createElement('option'); o.value = t.id; o.textContent = t.name; sel.appendChild(o); });
+      });
+    }
+  } else {
+    bar.classList.remove('show');
+    document.getElementById('check-all').checked = false;
+  }
+}
+
+function toggleAllChecks(master) {
+  document.querySelectorAll('.lead-check').forEach(c => { c.checked = master.checked; });
+  onCheckChange();
+}
+
+function clearSelection() {
+  document.querySelectorAll('.lead-check').forEach(c => { c.checked = false; });
+  document.getElementById('check-all').checked = false;
+  document.getElementById('bulk-bar').classList.remove('show');
+}
+
+async function startBulkSend() {
+  const templateId = document.getElementById('bulk-tpl-select').value;
+  if (!templateId) { toast('Select a template first 🙏', 'error'); return; }
+  if (!_gmailConnected) { toast('Connect Gmail first — click the Gmail pill in the header', 'error'); return; }
+
+  const checked = document.querySelectorAll('.lead-check:checked');
+  const leadIds = Array.from(checked).map(c => parseInt(c.dataset.leadId));
+  if (!leadIds.length) return;
+
+  // Open progress modal
+  document.getElementById('bulkModal').classList.add('open');
+  document.getElementById('bulk-progress-header').textContent =
+    `Sending to ${leadIds.length} lead${leadIds.length > 1 ? 's' : ''}… Claude is personalising each email.`;
+  document.getElementById('bulk-results').innerHTML =
+    '<div style="text-align:center;padding:20px"><span class="spin" style="width:24px;height:24px;border-width:3px"></span><p style="margin-top:12px;color:var(--grey)">This may take a minute…</p></div>';
+  document.getElementById('bulkDoneBtn').style.display = 'none';
+
+  try {
+    const r = await fetch('/api/bulk-send', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({lead_ids: leadIds, template_id: parseInt(templateId)})
+    });
+    const d = await r.json();
+
+    if (!r.ok && d.error === 'gmail_not_connected') {
+      document.getElementById('bulkModal').classList.remove('open');
+      toast('Gmail not connected — click the Gmail pill in the header', 'error');
+      return;
+    }
+
+    // Render results
+    const rows = (d.results || []);
+    document.getElementById('bulk-progress-header').textContent =
+      `Done! ✅ ${d.sent || 0} sent · ${rows.filter(r => r.status === 'skipped').length} skipped · ${rows.filter(r => r.status === 'error').length} errors`;
+
+    document.getElementById('bulk-results').innerHTML = rows.map(res => {
+      const icon  = res.status === 'sent' ? '✅' : res.status === 'skipped' ? '⏭' : '❌';
+      const color = res.status === 'sent' ? '#15803d' : res.status === 'skipped' ? '#a16207' : '#be123c';
+      const detail = res.email || res.reason || '';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--grey-l);font-size:12px">
+        <span>${icon}</span>
+        <span style="flex:1;font-weight:600">${escHtml(res.name)}</span>
+        <span style="color:${color};font-size:11px">${escHtml(detail)}</span>
+      </div>`;
+    }).join('');
+
+    document.getElementById('bulkDoneBtn').style.display = 'inline-flex';
+
+    // Update rows inline
+    rows.filter(r => r.status === 'sent').forEach(res => {
+      const row = document.getElementById(`row-${res.id}`);
+      if (!row) return;
+      const sel = row.querySelector('.status-select');
+      if (sel) { sel.value = 'Reached Out'; sel.className = 'status-select s-ReachedOut'; }
+      const ta = row.querySelector('.notes-ta');
+      if (ta) {
+        const today = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+        ta.value = ta.value.trim() ? ta.value.trim() + '\nEmail sent on ' + today : 'Email sent on ' + today;
+      }
+    });
+
+    clearSelection();
+  } catch {
+    document.getElementById('bulk-progress-header').textContent = 'Something went wrong 😅';
+    document.getElementById('bulkDoneBtn').style.display = 'inline-flex';
+  }
+}
+
+function closeBulkModal() {
+  document.getElementById('bulkModal').classList.remove('open');
+}
+
+// ── Email Draft modal ─────────────────────────────────────────────────────────
+let _draftLeadId    = null;
+let _draftTemplateId = null;
+
+function openEmailDraft(btn) {
+  _draftLeadId = btn.dataset.leadId;
+  const leadName = btn.dataset.leadName || '';
+  const leadType = btn.dataset.leadType || '';
+  const email    = btn.dataset.email || '';
+
+  // Reset state
+  document.getElementById('draft-form').style.display       = 'none';
+  document.getElementById('draft-generating').style.display = 'none';
+  document.getElementById('draft-no-tpl').style.display     = 'none';
+  _draftTemplateId = null;
+  document.getElementById('sendEmailBtn').disabled = true;
+  document.getElementById('sendEmailBtn').innerHTML = '📤 Send Email';
+  document.getElementById('generateDraftBtn').disabled = false;
+  document.getElementById('generateDraftBtn').innerHTML = '🤖 Generate AI Draft';
+
+  // Investor info
+  document.getElementById('draft-investor-info').innerHTML =
+    `Drafting for: <strong>${escHtml(leadName)}</strong>` +
+    (leadType ? ` <span style="opacity:0.7;font-weight:400">· ${escHtml(leadType)}</span>` : '');
+
+  // Pre-fill To
+  document.getElementById('draft-to').value = email;
+
+  // Populate template selector
+  const sel = document.getElementById('draft-tpl-select');
+  sel.innerHTML = '<option value="">Select a template…</option>';
+  if (_templates.length === 0) {
+    // fetch fresh if none cached
+    fetch('/api/templates').then(r => r.json()).then(ts => {
+      _templates = ts;
+      populateDraftTplSelect();
+    });
+  } else {
+    populateDraftTplSelect();
+  }
+
+  document.getElementById('emailDraftModal').classList.add('open');
+}
+
+function populateDraftTplSelect() {
+  const sel = document.getElementById('draft-tpl-select');
+  sel.innerHTML = '<option value="">Select a template…</option>';
+  _templates.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t.id; o.textContent = t.name;
+    sel.appendChild(o);
+  });
+  if (_templates.length === 0) {
+    document.getElementById('draft-no-tpl').style.display = 'flex';
+    document.getElementById('generateDraftBtn').disabled = true;
+  }
+}
+
+function closeEmailDraftModal() {
+  document.getElementById('emailDraftModal').classList.remove('open');
+  _draftLeadId = null;
+}
+
+async function generateAIDraft() {
+  const templateId = document.getElementById('draft-tpl-select').value;
+  if (!templateId) { toast('Select a template first 🙏', 'error'); return; }
+
+  const btn = document.getElementById('generateDraftBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Generating…';
+
+  document.getElementById('draft-form').style.display       = 'none';
+  document.getElementById('draft-generating').style.display = 'block';
+  document.getElementById('sendEmailBtn').disabled = true;
+
+  try {
+    const r = await fetch(`/api/lead/${_draftLeadId}/draft-email`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({template_id: parseInt(templateId)})
+    });
+    const d = await r.json();
+    document.getElementById('draft-generating').style.display = 'none';
+
+    if (!r.ok) {
+      toast(d.error || 'Failed to generate draft', 'error');
+      btn.disabled = false; btn.innerHTML = '🤖 Generate AI Draft';
+      return;
+    }
+
+    _draftTemplateId = parseInt(document.getElementById('draft-tpl-select').value);
+    document.getElementById('draft-subject').value = d.subject || '';
+    document.getElementById('draft-body').value    = d.body    || '';
+    document.getElementById('draft-form').style.display = 'block';
+    document.getElementById('sendEmailBtn').disabled    = false;
+    toast('✅ AI draft ready — review and send!', 'info');
+  } catch {
+    document.getElementById('draft-generating').style.display = 'none';
+    toast('Something went wrong generating draft 😅', 'error');
+  }
+
+  btn.disabled = false; btn.innerHTML = '🤖 Generate AI Draft';
+}
+
+async function sendEmailDraft() {
+  const toEmail = document.getElementById('draft-to').value.trim();
+  const subject = document.getElementById('draft-subject').value.trim();
+  const body    = document.getElementById('draft-body').value.trim();
+
+  if (!toEmail)          { toast('Please enter recipient email 🙏', 'error'); return; }
+  if (!subject || !body) { toast('Subject and body are required 🙏', 'error'); return; }
+
+  const btn = document.getElementById('sendEmailBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Sending…';
+
+  try {
+    const r = await fetch(`/api/lead/${_draftLeadId}/send-email`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({to_email: toEmail, subject, body, template_id: _draftTemplateId})
+    });
+    const d = await r.json();
+
+    if (!r.ok) {
+      if (d.error === 'gmail_not_connected') {
+        toast('⚠️ Gmail not connected — click the Gmail pill in the header to authorise', 'error');
+      } else {
+        toast(d.error || 'Failed to send', 'error');
+      }
+      btn.disabled = false; btn.innerHTML = '📤 Send Email';
+      return;
+    }
+
+    // Update row inline
+    const row = document.getElementById(`row-${_draftLeadId}`);
+    if (row) {
+      const sel = row.querySelector('.status-select');
+      if (sel) { sel.value = 'Reached Out'; sel.className = 'status-select s-ReachedOut'; }
+      const ta = row.querySelector('.notes-ta');
+      if (ta) {
+        const today = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+        ta.value = ta.value.trim() ? ta.value.trim() + '\nEmail sent on ' + today : 'Email sent on ' + today;
+      }
+    }
+    toast(`✅ Email sent to ${toEmail}! Status → Reached Out 🎯`);
+    closeEmailDraftModal();
+  } catch {
+    toast('Something went wrong 😅', 'error');
+    btn.disabled = false; btn.innerHTML = '📤 Send Email';
+  }
+}
+
+async function getMoreLeads() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Cooking up leads…';
+  toast('🍳 Fetching fresh food-tech leads…', 'info');
+  try {
+    const r = await fetch('/api/refresh', {method:'POST'});
+    const d = await r.json();
+    toast(d.message || '🍱 Done!');
+    if ((d.added || 0) > 0) setTimeout(() => location.reload(), 1400);
+  } catch { toast('Something went wrong 😅', 'error'); }
+  finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Get More Leads';
+  }
+}
+
+function openModal()  { document.getElementById('addModal').classList.add('open'); }
+function closeModal() { document.getElementById('addModal').classList.remove('open'); }
+
+document.getElementById('addModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('addModal')) closeModal();
+});
+
+async function submitLead() {
+  const data = {
+    investor_name: document.getElementById('f_investor_name').value.trim(),
+    investor_type: document.getElementById('f_investor_type').value,
+    key_contact:   document.getElementById('f_key_contact').value.trim(),
+    email:         document.getElementById('f_email').value.trim(),
+    linkedin:      document.getElementById('f_linkedin').value.trim(),
+  };
+  if (!data.investor_name) {
+    toast('Investor name is required 🙏', 'error'); return;
+  }
+  const r = await fetch('/api/lead', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)
+  });
+  if (r.ok) {
+    toast('Lead added! 🎉'); closeModal();
+    setTimeout(() => location.reload(), 700);
+  } else { toast('Failed to add 😬', 'error'); }
+}
+
+// ── Deliveries Modal ─────────────────────────────────────────────────────────
+
+function openDeliveriesModal() {
+  document.getElementById('deliveriesModal').classList.add('open');
+  loadDeliveries();
+  checkPorterSession();
+}
+
+function closeDeliveriesModal() {
+  document.getElementById('deliveriesModal').classList.remove('open');
+}
+
+document.getElementById('deliveriesModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('deliveriesModal')) closeDeliveriesModal();
+});
+
+async function checkPorterSession() {
+  try {
+    const r = await fetch('/api/porter/session-status');
+    const d = await r.json();
+    document.getElementById('porter-session-banner').style.display =
+      d.session_file_exists ? 'none' : 'flex';
+  } catch {
+    document.getElementById('porter-session-banner').style.display = 'flex';
+  }
+}
+
+async function setupPorterSession() {
+  toast('Opening Porter login window — complete your login in the browser…', 'info');
+  const btn = document.querySelector('#porter-session-banner button');
+  if (btn) { btn.disabled = true; btn.textContent = 'Opening…'; }
+  try {
+    const r = await fetch('/api/porter/setup-session', { method: 'POST' });
+    const d = await r.json();
+    toast(d.message || (d.ok ? 'Session saved!' : 'Setup failed'), d.ok ? 'success' : 'error');
+    if (d.ok) checkPorterSession();
+  } catch { toast('Network error', 'error'); }
+  if (btn) { btn.disabled = false; btn.textContent = 'Setup Login'; }
+}
+
+async function getDeliveryQuote() {
+  const pickup = document.getElementById('del-pickup').value.trim();
+  const drop   = document.getElementById('del-drop').value.trim();
+  if (!pickup || !drop) { toast('Enter both pickup and drop addresses first', 'error'); return; }
+  const btn = document.getElementById('del-quote-btn');
+  btn.disabled = true; btn.textContent = 'Getting…';
+  document.getElementById('del-quote-result').textContent = '';
+  try {
+    const r = await fetch('/api/porter/quote', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ pickup_address: pickup, drop_address: drop })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      document.getElementById('del-quote-result').textContent = 'Est. ' + d.estimated_cost;
+    } else if (d.session_expired) {
+      document.getElementById('porter-session-banner').style.display = 'flex';
+      toast('Porter session expired — please re-login', 'error');
+    } else {
+      toast(d.error || 'Quote failed', 'error');
+    }
+  } catch { toast('Network error', 'error'); }
+  btn.disabled = false; btn.textContent = 'Get Quote';
+}
+
+async function bookDelivery() {
+  const pickup   = document.getElementById('del-pickup').value.trim();
+  const drop     = document.getElementById('del-drop').value.trim();
+  const name     = document.getElementById('del-contact-name').value.trim();
+  const phone    = document.getElementById('del-contact-phone').value.trim();
+  const timeVal  = document.getElementById('del-pickup-time').value;
+  const notes    = document.getElementById('del-notes').value.trim();
+  if (!pickup || !drop || !name || !phone) { toast('Fill in all required fields', 'error'); return; }
+  const btn = document.getElementById('del-book-btn');
+  btn.disabled = true; btn.innerHTML = '⏳ Booking…';
+  try {
+    const r = await fetch('/api/porter/book', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        pickup_address: pickup, drop_address: drop,
+        contact_name: name, contact_phone: phone,
+        pickup_time: timeVal || 'now', notes
+      })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      toast('✅ Booked! Order: ' + (d.porter_order_id || 'confirmed') + (d.estimated_cost ? ' | ' + d.estimated_cost : ''), 'success');
+      document.getElementById('new-delivery-details').removeAttribute('open');
+      loadDeliveries();
+    } else if (d.session_expired) {
+      document.getElementById('porter-session-banner').style.display = 'flex';
+      toast('Porter session expired — please re-login', 'error');
+    } else {
+      toast(d.error || 'Booking failed', 'error');
+    }
+  } catch { toast('Network error', 'error'); }
+  btn.disabled = false; btn.innerHTML = '🛵 Book Delivery';
+}
+
+async function loadDeliveries() {
+  const wrap = document.getElementById('deliveries-table-wrap');
+  try {
+    const r = await fetch('/api/deliveries');
+    const deliveries = await r.json();
+    if (!deliveries.length) {
+      wrap.innerHTML = '<p style="font-size:12px;color:var(--grey);text-align:center;padding:24px">No deliveries yet. Book your first one above.</p>';
+      return;
+    }
+    const labels = { pending:'Pending', booked:'Booked', in_transit:'In Transit', delivered:'Delivered', failed:'Failed', cancelled:'Cancelled' };
+    const rows = deliveries.map(d => `
+      <tr style="border-bottom:1px solid #f3f4f6">
+        <td style="padding:8px;font-size:11px;color:var(--grey);white-space:nowrap">${new Date(d.created_at).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'})}</td>
+        <td style="padding:8px;font-size:12px;max-width:160px;word-break:break-word">${d.pickup_address}</td>
+        <td style="padding:8px;font-size:12px;max-width:160px;word-break:break-word">${d.drop_address}</td>
+        <td style="padding:8px;font-size:12px">${d.contact_name}<br><span style="color:var(--grey);font-size:11px">${d.contact_phone}</span></td>
+        <td style="padding:8px"><span class="del-badge del-${d.status}">${labels[d.status]||d.status}</span></td>
+        <td style="padding:8px;font-size:12px;font-weight:700;color:#a16207">${d.estimated_cost||'—'}</td>
+        <td style="padding:8px;font-size:11px;color:var(--grey)">${d.porter_order_id||'—'}</td>
+        <td style="padding:8px">
+          ${d.porter_order_id ? `<button class="btn btn-ghost" onclick="trackDelivery(${d.id},'${d.porter_order_id}')" style="padding:3px 9px;font-size:11px">Track</button>` : ''}
+        </td>
+      </tr>`).join('');
+    wrap.innerHTML = `<table style="width:100%;border-collapse:collapse">
+      <thead style="background:var(--purple)">
+        <tr>
+          ${['Time','Pickup','Drop','Receiver','Status','Fare','Order ID',''].map(h =>
+            `<th style="padding:7px 8px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,0.6);letter-spacing:.8px">${h}</th>`
+          ).join('')}
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  } catch {
+    wrap.innerHTML = '<p style="color:var(--red);font-size:12px;text-align:center;padding:24px">Failed to load deliveries</p>';
+  }
+}
+
+async function trackDelivery(deliveryId, porterOrderId) {
+  toast('Fetching live status…');
+  try {
+    const r = await fetch('/api/porter/track/' + porterOrderId);
+    const d = await r.json();
+    if (d.ok) {
+      toast('Order ' + porterOrderId + ': ' + d.status + (d.eta ? ' | ETA: ' + d.eta : ''), 'success');
+      const statusMap = { 'in transit': 'in_transit', 'out for delivery': 'in_transit', 'delivered': 'delivered', 'cancelled': 'cancelled' };
+      const normStatus = statusMap[d.status.toLowerCase()] || d.status.toLowerCase().replace(/\s+/g,'_');
+      await fetch('/api/deliveries/' + deliveryId, {
+        method: 'PATCH', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ status: normStatus })
+      });
+      loadDeliveries();
+    } else {
+      toast(d.error || 'Tracking failed', 'error');
+    }
+  } catch { toast('Network error', 'error'); }
+}
+</script>
+</body>
+</html>
