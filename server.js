@@ -159,6 +159,53 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', database: 'connected' });
 });
 
+// Diagnostics: report environment + current row count
+app.get('/api/debug', (req, res) => {
+  const seedPath = path.join(__dirname, 'seed-data.json');
+  const info = {
+    dirname: __dirname,
+    dbPath,
+    seedExists: fs.existsSync(seedPath),
+    cwd: process.cwd(),
+    node: process.version
+  };
+  db.get('SELECT COUNT(*) AS c FROM usecases', (err, row) => {
+    info.rowCount = err ? `ERROR: ${err.message}` : row.c;
+    res.json(info);
+  });
+});
+
+// On-demand reseed: forces the baseline 45 in, returns per-row errors if any
+app.get('/api/reseed', (req, res) => {
+  const seedPath = path.join(__dirname, 'seed-data.json');
+  let seed;
+  try {
+    seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+  } catch (e) {
+    return res.json({ stage: 'read-seed-file', error: e.message, seedPath });
+  }
+
+  const errors = [];
+  let done = 0;
+  if (seed.length === 0) return res.json({ attempted: 0, errors, finalCount: 0 });
+
+  seed.forEach(u => {
+    db.run(
+      `INSERT OR REPLACE INTO usecases (id, businessUnit, name, description, priority, owner, status, output, isPersonal)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [u.id, u.businessUnit, u.name, u.description, u.priority, u.owner || null, u.status || 'Planned', u.output || '', u.isPersonal ? 1 : 0],
+      function (err) {
+        if (err) errors.push({ id: u.id, error: err.message });
+        if (++done === seed.length) {
+          db.get('SELECT COUNT(*) AS c FROM usecases', (e, row) => {
+            res.json({ attempted: seed.length, errorCount: errors.length, errors, finalCount: e ? `ERROR: ${e.message}` : row.c });
+          });
+        }
+      }
+    );
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`\n🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Database: usecases.db`);
