@@ -916,8 +916,8 @@ const DEFAULTS = [
 ];
 
 const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
-  ? 'http://localhost:3000'
-  : 'https://bhookle-ai-usecases.onrender.com';
+  ? 'http://localhost:3000/api'
+  : 'https://bhookle-ai-usecases.onrender.com/api';
 
 // Try to load from API, fallback to localStorage
 async function loadData() {

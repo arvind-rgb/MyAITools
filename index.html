@@ -915,22 +915,49 @@ const DEFAULTS = [
   { id: 10, businessUnit: 'Marketing',            name: 'Campaign Performance Analysis',  description: 'AI analysis of which outreach email templates, subject lines, and personalization strategies have the highest open and response rates. Surfaces winning patterns for future campaigns.',                priority: 'Low',      owner: 'Marketing',    status: 'Planned',     output: '' },
 ];
 
-const STORAGE_KEY = 'bhookle_usecases';
+const API_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+  ? 'http://localhost:3000/api'
+  : 'https://bhookle-ai-usecases.onrender.com/api';
 
-function loadData() {
+// Try to load from API, fallback to localStorage
+async function loadData() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const res = await fetch(`${API_URL}/usecases`);
+    if (res.ok) {
+      const apiData = await res.json();
+      if (apiData && apiData.length > 0) {
+        localStorage.setItem('bhookle_usecases', JSON.stringify(apiData));
+        return apiData;
+      }
+    }
+  } catch(e) {
+    console.log('ℹ API not available, using localStorage');
+  }
+
+  // Fallback to localStorage
+  try {
+    const saved = localStorage.getItem('bhookle_usecases');
     if (saved) return JSON.parse(saved);
   } catch(e) {}
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
 
 function saveData() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e) {}
+  try { localStorage.setItem('bhookle_usecases', JSON.stringify(data)); } catch(e) {}
 }
 
-let data = loadData();
-let nextId = data.length ? Math.max(...data.map(d => d.id)) + 1 : 1;
+let data = [];
+let nextId = 1;
+
+// Initialize data on load
+(async function init() {
+  data = await loadData();
+  nextId = data.length ? Math.max(...data.map(d => d.id)) + 1 : 1;
+  renderTable();
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTable();
+  });
+})();
 let editingId = null;
 let sortKey = null;
 let sortDir = 1;
@@ -1116,7 +1143,7 @@ function closeOnBackdrop(e) {
   if (e.target === document.getElementById('modalBackdrop')) closeModal();
 }
 
-function saveEntry() {
+async function saveEntry() {
   const bu     = document.getElementById('fBU').value.trim();
   const pri    = document.getElementById('fPriority').value;
   const name   = document.getElementById('fName').value.trim();
@@ -1134,15 +1161,39 @@ function saveEntry() {
     return;
   }
 
-  if (editingId) {
-    const r = data.find(d => d.id === editingId);
-    r.businessUnit = bu; r.priority = pri; r.name = name; r.description = desc; r.owner = own; r.status = status; r.output = output;
-    toast('✓ Use case updated.', 'var(--green)');
-  } else {
-    data.push({ id: nextId++, businessUnit: bu, priority: pri, name, description: desc, owner: own, status, output });
-    toast('✓ Use case added.', 'var(--green)');
+  const entry = { businessUnit: bu, priority: pri, name, description: desc, owner: own, status, output, isPersonal: bu === 'Personal' ? 1 : 0 };
+
+  try {
+    if (editingId) {
+      const res = await fetch(`${API_URL}/usecases/${editingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+      if (!res.ok) throw new Error('Update failed');
+
+      const r = data.find(d => d.id === editingId);
+      Object.assign(r, entry);
+      toast('✓ Use case updated.', 'var(--green)');
+    } else {
+      const res = await fetch(`${API_URL}/usecases`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+      if (!res.ok) throw new Error('Create failed');
+      const result = await res.json();
+
+      data.push({ id: result.id, ...entry });
+      nextId = Math.max(...data.map(d => d.id)) + 1;
+      toast('✓ Use case added.', 'var(--green)');
+    }
+    saveData();
+  } catch(e) {
+    console.error('Save error:', e);
+    toast('⚠ Save failed: ' + e.message, 'var(--red)');
+    return;
   }
-  saveData();
 
   closeModal();
   renderTable();
@@ -1150,13 +1201,22 @@ function saveEntry() {
 
 function editEntry(id) { openModal(id); }
 
-function deleteEntry(id) {
+async function deleteEntry(id) {
   const r = data.find(d => d.id === id);
   if (!confirm(`Delete "${r.name}"?`)) return;
-  data = data.filter(d => d.id !== id);
-  saveData();
-  renderTable();
-  toast('✓ Deleted.', 'var(--red)');
+
+  try {
+    const res = await fetch(`${API_URL}/usecases/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Delete failed');
+
+    data = data.filter(d => d.id !== id);
+    saveData();
+    renderTable();
+    toast('✓ Deleted.', 'var(--red)');
+  } catch(e) {
+    console.error('Delete error:', e);
+    toast('⚠ Delete failed: ' + e.message, 'var(--red)');
+  }
 }
 
 function exportCSV() {
