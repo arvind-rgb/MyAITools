@@ -1,6 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 const cors = require('cors');
 
 const app = express();
@@ -38,8 +39,47 @@ function initializeDB() {
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `, (err) => {
-    if (err) console.error('Table creation error:', err);
-    else console.log('✅ Database table ready');
+    if (err) {
+      console.error('Table creation error:', err);
+    } else {
+      console.log('✅ Database table ready');
+      seedDB();
+    }
+  });
+}
+
+// Seed the recovered baseline use cases from seed-data.json.
+// Render free tier has an ephemeral filesystem, so the SQLite file is wiped
+// on every restart/spin-down. Re-seeding from the committed file on each boot
+// guarantees the baseline list of use cases always survives.
+function seedDB() {
+  const seedPath = path.join(__dirname, 'seed-data.json');
+  if (!fs.existsSync(seedPath)) {
+    console.log('ℹ️  No seed-data.json found, skipping seed.');
+    return;
+  }
+
+  let seed;
+  try {
+    seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+  } catch (e) {
+    console.error('Seed parse error:', e.message);
+    return;
+  }
+
+  const stmt = db.prepare(
+    `INSERT OR IGNORE INTO usecases (id, businessUnit, name, description, priority, owner, status, output, isPersonal)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  );
+  seed.forEach(u => {
+    stmt.run([
+      u.id, u.businessUnit, u.name, u.description, u.priority,
+      u.owner || null, u.status || 'Planned', u.output || '', u.isPersonal ? 1 : 0
+    ]);
+  });
+  stmt.finalize(err => {
+    if (err) console.error('Seed error:', err.message);
+    else console.log(`✅ Seed complete: ensured ${seed.length} baseline use cases`);
   });
 }
 
