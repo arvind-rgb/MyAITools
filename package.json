@@ -5,12 +5,16 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "postinstall": "npm rebuild sqlite3"
   },
   "dependencies": {
     "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "sqlite3": "^6.0.1"
+    "sqlite3": "^5.1.6"
+  },
+  "engines": {
+    "node": "16.x || 18.x || 20.x"
   }
 }

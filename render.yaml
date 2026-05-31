@@ -3,8 +3,10 @@ services:
     name: bhookle-ai-usecases
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm install && npm rebuild
     startCommand: node server.js
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NPM_CONFIG_BUILD_FROM_SOURCE
+        value: "true"
