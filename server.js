@@ -10,7 +10,16 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+
+// Serve the frontend from this same server (single origin, no separate CDN).
+// HTML is served with no-cache headers so app updates always show immediately
+// and we never get the stale-cache problems a CDN can cause.
+app.get(['/', '/index.html', '/app'], (req, res) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // ─── PostgreSQL connection ───────────────────────────────────────────────
 // DATABASE_URL is provided by Render (linked Postgres instance).
