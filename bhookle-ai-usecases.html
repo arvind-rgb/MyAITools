@@ -1118,10 +1118,28 @@ function activateCell(td, id, field, type) {
       renderTable();
       return;
     }
+    if (r[field] === newVal) { renderTable(); return; } // no change
     r[field] = newVal;
     saveData();
     renderTable();
     updateStats();
+    // Persist inline edit to the database
+    fetch(`${API_URL}/usecases/${r.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        businessUnit: r.businessUnit,
+        name: r.name,
+        description: r.description,
+        priority: r.priority,
+        owner: r.owner,
+        status: r.status,
+        output: r.output || '',
+        isPersonal: r.isPersonal || 0
+      })
+    })
+    .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); })
+    .catch(() => toast('⚠ Save failed — check connection', 'var(--red)'));
   }
 
   el.addEventListener('blur', commit);
