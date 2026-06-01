@@ -750,6 +750,11 @@
     <h3>NO RECORDS FOUND</h3>
     <p>Try adjusting your filters or add a new use case.</p>
   </div>
+  <div class="empty-state" id="loadingState" style="display:none">
+    <div class="icon">⏳</div>
+    <h3 id="loadingTitle">CONNECTING…</h3>
+    <p id="loadingMsg">Loading your use cases from the server.</p>
+  </div>
 </div>
 
 <!-- ADD / EDIT MODAL -->
@@ -919,26 +924,61 @@ const API_URL = window.location.origin.includes('localhost') || window.location.
   ? 'http://localhost:3000/api'
   : 'https://bhookle-ai-usecases.onrender.com/api';
 
-// Try to load from API, fallback to localStorage
+// Loading indicator helpers
+function showLoading(title, msg) {
+  const ls = document.getElementById('loadingState');
+  if (!ls) return;
+  document.getElementById('loadingTitle').textContent = title;
+  document.getElementById('loadingMsg').textContent = msg;
+  ls.style.display = 'block';
+  const es = document.getElementById('emptyState');
+  if (es) es.style.display = 'none';
+  const tb = document.getElementById('tableBody');
+  if (tb) tb.innerHTML = '';
+}
+function hideLoading() {
+  const ls = document.getElementById('loadingState');
+  if (ls) ls.style.display = 'none';
+}
+
+function fetchWithTimeout(url, opts = {}, ms = 15000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
+// Load from API with retries — rides through Render free-tier cold starts
+// (the server sleeps after 15 min idle and takes ~50s to wake up).
 async function loadData() {
-  try {
-    const res = await fetch(`${API_URL}/usecases`);
-    if (res.ok) {
-      const apiData = await res.json();
-      if (apiData && apiData.length > 0) {
-        localStorage.setItem('bhookle_usecases', JSON.stringify(apiData));
-        return apiData;
+  const maxAttempts = 12; // ~12 x (15s timeout + 4s wait) gives plenty of runway
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetchWithTimeout(`${API_URL}/usecases`, {}, 15000);
+      if (res.ok) {
+        const apiData = await res.json();
+        if (Array.isArray(apiData)) {
+          localStorage.setItem('bhookle_usecases', JSON.stringify(apiData));
+          hideLoading();
+          return apiData;
+        }
       }
+    } catch (e) {
+      // timeout or network error — server is most likely still waking up
     }
-  } catch(e) {
-    console.log('ℹ API not available, using localStorage');
+    if (attempt === 1) showLoading('WAKING UP SERVER…', 'The free server was asleep. This takes up to a minute on first load — hang tight, your data is safe.');
+    else showLoading('WAKING UP SERVER…', `Still connecting… (attempt ${attempt} of ${maxAttempts}). Your data is safe in the database.`);
+    await new Promise(r => setTimeout(r, 4000));
   }
 
-  // Fallback to localStorage
+  // All retries failed — fall back to the last cached copy so the user sees something
+  hideLoading();
   try {
     const saved = localStorage.getItem('bhookle_usecases');
-    if (saved) return JSON.parse(saved);
-  } catch(e) {}
+    if (saved) {
+      const arr = JSON.parse(saved);
+      if (Array.isArray(arr) && arr.length) return arr;
+    }
+  } catch (e) {}
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
 
@@ -950,14 +990,20 @@ let data = [];
 let nextId = 1;
 
 // Initialize data on load
-(async function init() {
-  data = await loadData();
-  nextId = data.length ? Math.max(...data.map(d => d.id)) + 1 : 1;
-  renderTable();
-  document.addEventListener('DOMContentLoaded', () => {
+function boot() {
+  showLoading('CONNECTING…', 'Loading your use cases from the server.');
+  (async function init() {
+    data = await loadData();
+    nextId = data.length ? Math.max(...data.map(d => d.id)) + 1 : 1;
+    hideLoading();
     renderTable();
-  });
-})();
+  })();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
 let editingId = null;
 let sortKey = null;
 let sortDir = 1;
